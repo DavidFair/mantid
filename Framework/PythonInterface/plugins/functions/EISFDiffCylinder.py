@@ -72,7 +72,7 @@ class EISFDiffCylinder(IFunction1D):
         radius = self.getParameterValue('R')
         length = self.getParameterValue('L')
         x = np.asarray(xvals)  # Q values
-        z = length * np.outer(x, self.cos_theta)
+        z = length * np.outer(x, self.cos_theta) / 2.0
         z = np.where(0, 1e-9, z)  # prevent division by zero
         # EISF along cylinder Z-axis
         a = np.square(np.sin(z)/z)
