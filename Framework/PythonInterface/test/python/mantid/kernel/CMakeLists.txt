@@ -5,6 +5,7 @@ set ( TEST_PY_FILES
   ArrayPropertyTest.py
   ArrayBoundedValidatorTest.py
   ArrayLengthValidatorTest.py
+  ArrayOrderedPairsValidatorTest.py
   BoundedValidatorTest.py
   CompositeValidatorTest.py
   ConfigServiceTest.py
@@ -31,6 +32,7 @@ set ( TEST_PY_FILES
   PropertyManagerPropertyTest.py
   PythonPluginsTest.py
   StatisticsTest.py
+  StringContainsValidatorTest.py
   TimeSeriesPropertyTest.py
   QuatTest.py
   UnitConversionTest.py

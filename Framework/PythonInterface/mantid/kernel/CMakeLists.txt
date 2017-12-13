@@ -36,6 +36,7 @@ set ( EXPORT_FILES
   src/Exports/ListValidator.cpp
   src/Exports/ArrayLengthValidator.cpp
   src/Exports/ArrayBoundedValidator.cpp
+  src/Exports/ArrayOrderedPairsValidator.cpp
   src/Exports/MandatoryValidator.cpp
   src/Exports/CompositeValidator.cpp
   src/Exports/LogFilter.cpp
@@ -55,6 +56,7 @@ set ( EXPORT_FILES
   src/Exports/OptionalBool.cpp
   src/Exports/UsageService.cpp
   src/Exports/Atom.cpp
+  src/Exports/StringContainsValidator.cpp
 )
 
 set ( MODULE_DEFINITION ${CMAKE_CURRENT_BINARY_DIR}/kernel.cpp )
@@ -187,7 +189,7 @@ add_library ( PythonKernelModule ${EXPORT_FILES} ${MODULE_DEFINITION} ${SRC_FILE
 set_python_properties( PythonKernelModule _kernel )
 set_target_output_directory ( PythonKernelModule ${OUTPUT_DIR} .pyd )
 # Add the required dependencies
-target_link_libraries ( PythonKernelModule LINK_PRIVATE ${TCMALLOC_LIBRARIES_LINKTIME} Kernel ${Boost_LIBRARIES}
+target_link_libraries ( PythonKernelModule LINK_PRIVATE ${TCMALLOC_LIBRARIES_LINKTIME} Types Kernel ${Boost_LIBRARIES}
                         ${PYTHON_LIBRARIES} ${PYTHON_DEPS} ${POCO_LIBRARIES} ${TBB_LIBRARIES} 
 			${TBB_MALLOC_LIBRARIES} )
 

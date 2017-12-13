@@ -62,9 +62,23 @@ def create_properties():
                                        default='',
                                        prefix='',
                                        property_type=str),
-                  algorithm_list_entry(column_name="SampleTransmission",
+                  algorithm_list_entry(column_name="ssp",
+                                       algorithm_property="SampleScatterPeriod",
+                                       description='The sample scatter period',
+                                       show_value=False,
+                                       default='',
+                                       prefix='',
+                                       property_type=str),
+                  algorithm_list_entry(column_name="SampleTrans",
                                        algorithm_property="SampleTransmission",
                                        description='The run number of the transmission sample',
+                                       show_value=False,
+                                       default='',
+                                       prefix='',
+                                       property_type=str),
+                  algorithm_list_entry(column_name="stp",
+                                       algorithm_property="SampleTransmissionPeriod",
+                                       description='The sample transmission period',
                                        show_value=False,
                                        default='',
                                        prefix='',
@@ -76,6 +90,13 @@ def create_properties():
                                        default='',
                                        prefix='',
                                        property_type=str),
+                  algorithm_list_entry(column_name="sdp",
+                                       algorithm_property="SampleDirectPeriod",
+                                       description='The sample direct period',
+                                       show_value=False,
+                                       default='',
+                                       prefix='',
+                                       property_type=str),
                   algorithm_list_entry(column_name="CanScatter",
                                        algorithm_property="CanScatter",
                                        description='The run number of the scatter can',
@@ -83,9 +104,23 @@ def create_properties():
                                        default='',
                                        prefix='',
                                        property_type=str),
-                  algorithm_list_entry(column_name="CanTransmission",
+                  algorithm_list_entry(column_name="csp",
+                                       algorithm_property="CanScatterPeriod",
+                                       description='The can scatter period',
+                                       show_value=False,
+                                       default='',
+                                       prefix='',
+                                       property_type=str),
+                  algorithm_list_entry(column_name="CanTrans",
                                        algorithm_property="CanTransmission",
                                        description='The run number of the transmission can',
+                                       show_value=False,
+                                       default='',
+                                       prefix='',
+                                       property_type=str),
+                  algorithm_list_entry(column_name="ctp",
+                                       algorithm_property="CanTransmissionPeriod",
+                                       description='The can transmission period',
                                        show_value=False,
                                        default='',
                                        prefix='',
@@ -97,9 +132,23 @@ def create_properties():
                                        default='',
                                        prefix='',
                                        property_type=str),
+                  algorithm_list_entry(column_name="cdp",
+                                       algorithm_property="CanDirectPeriod",
+                                       description='The can direct period',
+                                       show_value=False,
+                                       default='',
+                                       prefix='',
+                                       property_type=str),
                   algorithm_list_entry(column_name="",
                                        algorithm_property="UseOptimizations",
                                        description='If optimizations should be used.',
+                                       show_value=False,
+                                       default=False,
+                                       prefix='',
+                                       property_type=bool),
+                  algorithm_list_entry(column_name="",
+                                       algorithm_property="PlotResults",
+                                       description='If results should be plotted.',
                                        show_value=False,
                                        default=False,
                                        prefix='',
@@ -109,6 +158,14 @@ def create_properties():
                                        description='An optional custom output workspace name.',
                                        show_value=False,
                                        default='',
+                                       prefix='',
+                                       property_type=str),
+                  algorithm_list_entry(column_name="User File",
+                                       algorithm_property="UserFile",
+                                       description=('The user file to use, this will override GUI changes for this row.'
+                                                    ' If left unspecified default will be used'),
+                                       show_value=False,
+                                       default="",
                                        prefix='',
                                        property_type=str),
                   algorithm_list_entry(column_name="",
@@ -124,7 +181,14 @@ def create_properties():
                                        show_value=False,
                                        default=OutputMode.to_string(OutputMode.PublishToADS),
                                        prefix='',
-                                       property_type=bool)
+                                       property_type=bool),
+                  algorithm_list_entry(column_name="",
+                                       algorithm_property="OutputGraph",
+                                       description='The name of the graph to output to.',
+                                       show_value=False,
+                                       default='',
+                                       prefix='',
+                                       property_type=str)
                   ]
     return properties
 
@@ -197,12 +261,14 @@ class SANSGuiDataProcessorAlgorithm(DataProcessorAlgorithm):
         # 2. Get the state for the index from the PropertyManagerDataService
         property_manager_service = PropertyManagerService()
         state = property_manager_service.get_single_state_from_pmds(index_to_retrieve=index)
-
         # 3. Get some global settings
         use_optimizations = self.getProperty("UseOptimizations").value
         output_mode_as_string = self.getProperty("OutputMode").value
         output_mode = OutputMode.from_string(output_mode_as_string)
+        plot_results = self.getProperty('PlotResults').value
+        output_graph = self.getProperty('OutputGraph').value
 
         # 3. Run the sans_batch script
         sans_batch = SANSBatchReduction()
-        sans_batch(states=state, use_optimizations=use_optimizations, output_mode=output_mode)
+        sans_batch(states=state, use_optimizations=use_optimizations, output_mode=output_mode, plot_results=plot_results
+                   , output_graph=output_graph)

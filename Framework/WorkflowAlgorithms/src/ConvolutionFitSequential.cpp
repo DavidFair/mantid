@@ -247,7 +247,7 @@ void ConvolutionFitSequential::exec() {
   deleteProgress.report("Deleting PlotPeak Output");
 
   const auto paramTableName = outputWsName + "_Parameters";
-  AnalysisDataService::Instance().add(paramTableName, outputWs);
+  AnalysisDataService::Instance().addOrReplace(paramTableName, outputWs);
 
   // Construct output workspace
   const auto resultWsName = outputWsName + "_Result";
@@ -653,7 +653,7 @@ void ConvolutionFitSequential::extractMembers(
 
   // Check whether a delta function member was a member in
   // the convolution fitting.
-  if (delta.compare("true") == 0) {
+  if (delta == "true") {
     members.push_back("Delta");
   }
 

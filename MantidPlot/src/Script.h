@@ -62,7 +62,7 @@ public:
 
   /// Constructor
   Script(ScriptingEnv *env, const QString &name, const InteractionType interact,
-         QObject *context = NULL);
+         QObject *context = nullptr);
   /// Destructor
   ~Script() override;
   /// Returns the envirnoment this script is tied to
@@ -91,8 +91,8 @@ public:
   bool redirectStdOut() const { return m_redirectOutput; }
   void redirectStdOut(bool on) { m_redirectOutput = on; }
 
-  virtual void recursiveAsyncSetup() {}
-  virtual void recursiveAsyncTeardown() {}
+  virtual bool recursiveAsyncSetup() { return false; }
+  virtual void recursiveAsyncTeardown(bool) {}
 
   /// Create a list of keywords for the code completion API
   virtual void generateAutoCompleteList() {}
