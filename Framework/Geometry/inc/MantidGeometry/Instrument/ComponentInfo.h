@@ -71,12 +71,22 @@ private:
   ComponentInfo(const ComponentInfo &other);
 
 public:
+  typedef struct {
+    size_t topLeft;
+    size_t bottomLeft;
+    size_t bottomRight;
+    size_t topRight;
+    size_t nX;
+    size_t nY;
+  } StructuredPanel;
+
   ComponentInfo(
       std::unique_ptr<Beamline::ComponentInfo> componentInfo,
       boost::shared_ptr<const std::vector<Mantid::Geometry::IComponent *>>
           componentIds,
-      boost::shared_ptr<const std::unordered_map<Geometry::IComponent *,
-                                                 size_t>> componentIdToIndexMap,
+      boost::shared_ptr<
+          const std::unordered_map<Geometry::IComponent *, size_t>>
+          componentIdToIndexMap,
       boost::shared_ptr<std::vector<boost::shared_ptr<const Geometry::IObject>>>
           shapes);
   ~ComponentInfo();
@@ -86,6 +96,7 @@ public:
   std::vector<size_t> detectorsInSubtree(size_t componentIndex) const;
   std::vector<size_t> componentsInSubtree(size_t componentIndex) const;
   size_t size() const;
+  StructuredPanel structuredPanel(const size_t componentIndex) const;
   size_t indexOf(Geometry::IComponent *id) const;
   size_t indexOf(const std::string &name) const;
   bool isDetector(const size_t componentIndex) const;
@@ -121,12 +132,16 @@ public:
     return m_componentIds->operator[](componentIndex);
   }
   bool hasShape(const size_t componentIndex) const;
-  const Geometry::IObject &shape(const size_t componentIndex) const;
+  
+  boost::shared_ptr<const Geometry::IObject>
+  shape(const size_t componentIndex) const;
+
   double solidAngle(const size_t componentIndex,
                     const Kernel::V3D &observer) const;
   BoundingBox boundingBox(const size_t componentIndex,
                           const BoundingBox *reference = nullptr) const;
   bool isStructuredBank(const size_t componentIndex) const;
+  bool isRectangularBank(const size_t componentIndex) const;
   void setScanInterval(const std::pair<int64_t, int64_t> &interval);
   void merge(const ComponentInfo &other);
   size_t scanSize() const;
