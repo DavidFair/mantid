@@ -22,6 +22,7 @@
 #include "GUI/Instrument/InstrumentOptionDefaults.h"
 #include "GUI/MainWindow/IMainWindowPresenter.h"
 #include "GUI/MainWindow/IMainWindowView.h"
+#include "GUI/RoiSelector/IRoiPresenter.h"
 #include "GUI/Runs/IRunNotifier.h"
 #include "GUI/Runs/IRunsPresenter.h"
 #include "GUI/Runs/ISearchModel.h"
@@ -158,6 +159,13 @@ public:
   MOCK_METHOD0(notifyAutoreductionResumed, void());
   MOCK_METHOD1(notifyInstrumentChanged, void(std::string const &));
   MOCK_METHOD0(restoreDefaults, void());
+};
+
+class MockRoiPresenter : public IRoiPresenter {
+public:
+  MOCK_METHOD1(acceptMainPresenter, void(IBatchPresenter *));
+  MOCK_METHOD0(notifyWorkspaceChanged, void());
+  MOCK_METHOD0(notifyHome, void());
 };
 
 class MockInstrumentPresenter : public IInstrumentPresenter {

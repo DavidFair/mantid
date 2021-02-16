@@ -44,6 +44,9 @@ void QtBatchView::initLayout() {
   m_experiment = std::make_unique<QtExperimentView>(createReductionAlg(), this);
   m_ui.batchTabs->addTab(m_experiment.get(), "Experiment Settings");
 
+  m_roi = std::make_unique<QtRoiView>(this);
+  m_ui.batchTabs->addTab(m_roi.get(), "Regions of Interest");
+
   m_instrument = std::make_unique<QtInstrumentView>(createReductionAlg(), this);
   m_ui.batchTabs->addTab(m_instrument.get(), "Instrument Settings");
 
@@ -52,6 +55,8 @@ void QtBatchView::initLayout() {
 }
 
 IExperimentView *QtBatchView::experiment() const { return m_experiment.get(); }
+
+IRoiView *QtBatchView::roi() const { return m_roi.get(); }
 
 IInstrumentView *QtBatchView::instrument() const { return m_instrument.get(); }
 

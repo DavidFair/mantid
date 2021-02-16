@@ -10,6 +10,7 @@
 #include "GUI/Event/EventPresenterFactory.h"
 #include "GUI/Experiment/ExperimentPresenterFactory.h"
 #include "GUI/Instrument/InstrumentPresenterFactory.h"
+#include "GUI/RoiSelector/RoiPresenterFactory.h"
 #include "GUI/Runs/RunsPresenterFactory.h"
 #include "GUI/Save/SavePresenterFactory.h"
 #include "IBatchPresenter.h"
@@ -25,34 +26,44 @@ class BatchPresenterFactory : public IBatchPresenterFactory {
 public:
   BatchPresenterFactory(
       // cppcheck-suppress passedByValue
-      RunsPresenterFactory runsPresenterFactory, EventPresenterFactory eventPresenterFactory,
-      ExperimentPresenterFactory experimentPresenterFactory, InstrumentPresenterFactory instrumentPresenterFactory,
+      RunsPresenterFactory runsPresenterFactory,
+      EventPresenterFactory eventPresenterFactory,
+      ExperimentPresenterFactory experimentPresenterFactory,
+      RoiPresenterFactory roiPresenterFactory,
+      InstrumentPresenterFactory instrumentPresenterFactory,
       SavePresenterFactory savePresenterFactory)
       : m_runsPresenterFactory(std::move(runsPresenterFactory)),
         m_eventPresenterFactory(std::move(eventPresenterFactory)),
         m_experimentPresenterFactory(std::move(experimentPresenterFactory)),
+        m_roiPresenterFactory(std::move(roiPresenterFactory)),
         m_instrumentPresenterFactory(std::move(instrumentPresenterFactory)),
         m_savePresenterFactory(std::move(savePresenterFactory)) {}
 
   std::unique_ptr<IBatchPresenter> make(IBatchView *view) override {
     auto runsPresenter = m_runsPresenterFactory.make(view->runs());
     auto eventPresenter = m_eventPresenterFactory.make(view->eventHandling());
-    auto experimentPresenter = m_experimentPresenterFactory.make(view->experiment());
-    auto instrumentPresenter = m_instrumentPresenterFactory.make(view->instrument());
+    auto experimentPresenter =
+        m_experimentPresenterFactory.make(view->experiment());
+    auto roiPresenter = m_roiPresenterFactory.make(view->roi());
+    auto instrumentPresenter =
+        m_instrumentPresenterFactory.make(view->instrument());
     auto savePresenter = m_savePresenterFactory.make(view->save());
 
     auto model = Batch(experimentPresenter->experiment(), instrumentPresenter->instrument(),
                        runsPresenter->mutableRunsTable(), eventPresenter->slicing());
 
-    return std::make_unique<BatchPresenter>(view, std::move(model), std::move(runsPresenter), std::move(eventPresenter),
-                                            std::move(experimentPresenter), std::move(instrumentPresenter),
-                                            std::move(savePresenter));
+    return std::make_unique<BatchPresenter>(
+        view, std::move(model), std::move(runsPresenter),
+        std::move(eventPresenter), std::move(experimentPresenter),
+        std::move(roiPresenter), std::move(instrumentPresenter),
+        std::move(savePresenter));
   }
 
 private:
   RunsPresenterFactory m_runsPresenterFactory;
   EventPresenterFactory m_eventPresenterFactory;
   ExperimentPresenterFactory m_experimentPresenterFactory;
+  RoiPresenterFactory m_roiPresenterFactory;
   InstrumentPresenterFactory m_instrumentPresenterFactory;
   SavePresenterFactory m_savePresenterFactory;
 };

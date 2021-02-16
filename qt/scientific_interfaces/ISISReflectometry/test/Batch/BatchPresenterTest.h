@@ -466,6 +466,7 @@ private:
   NiceMock<MockRunsPresenter> *m_runsPresenter;
   NiceMock<MockEventPresenter> *m_eventPresenter;
   NiceMock<MockExperimentPresenter> *m_experimentPresenter;
+  NiceMock<MockRoiPresenter> *m_roiPresenter;
   NiceMock<MockInstrumentPresenter> *m_instrumentPresenter;
   NiceMock<MockSavePresenter> *m_savePresenter;
   std::vector<std::string> m_instruments;
@@ -480,13 +481,19 @@ private:
     friend class BatchPresenterTest;
 
   public:
-    BatchPresenterFriend(IBatchView *view, Batch model, std::unique_ptr<IRunsPresenter> runsPresenter,
-                         std::unique_ptr<IEventPresenter> eventPresenter,
-                         std::unique_ptr<IExperimentPresenter> experimentPresenter,
-                         std::unique_ptr<IInstrumentPresenter> instrumentPresenter,
-                         std::unique_ptr<ISavePresenter> savePresenter)
-        : BatchPresenter(view, std::move(model), std::move(runsPresenter), std::move(eventPresenter),
-                         std::move(experimentPresenter), std::move(instrumentPresenter), std::move(savePresenter)) {}
+    BatchPresenterFriend(
+        IBatchView *view, Batch model,
+        std::unique_ptr<IRunsPresenter> runsPresenter,
+        std::unique_ptr<IEventPresenter> eventPresenter,
+        std::unique_ptr<IExperimentPresenter> experimentPresenter,
+        std::unique_ptr<IRoiPresenter> roiPresenter,
+        std::unique_ptr<IInstrumentPresenter> instrumentPresenter,
+        std::unique_ptr<ISavePresenter> savePresenter)
+        : BatchPresenter(
+              view, std::move(model), std::move(runsPresenter),
+              std::move(eventPresenter), std::move(experimentPresenter),
+              std::move(roiPresenter), std::move(instrumentPresenter),
+              std::move(savePresenter)) {}
   };
 
   RunsTable makeRunsTable() { return RunsTable(m_instruments, m_tolerance, ReductionJobs()); }
@@ -500,18 +507,24 @@ private:
     // Create pointers to the child presenters and pass them into the batch
     auto runsPresenter = std::make_unique<NiceMock<MockRunsPresenter>>();
     auto eventPresenter = std::make_unique<NiceMock<MockEventPresenter>>();
-    auto experimentPresenter = std::make_unique<NiceMock<MockExperimentPresenter>>();
-    auto instrumentPresenter = std::make_unique<NiceMock<MockInstrumentPresenter>>();
+    auto experimentPresenter =
+        std::make_unique<NiceMock<MockExperimentPresenter>>();
+    auto roiPresenter = std::make_unique<NiceMock<MockRoiPresenter>>();
+    auto instrumentPresenter =
+        std::make_unique<NiceMock<MockInstrumentPresenter>>();
     auto savePresenter = std::make_unique<NiceMock<MockSavePresenter>>();
     m_runsPresenter = runsPresenter.get();
     m_eventPresenter = eventPresenter.get();
     m_experimentPresenter = experimentPresenter.get();
+    m_roiPresenter = roiPresenter.get();
     m_instrumentPresenter = instrumentPresenter.get();
     m_savePresenter = savePresenter.get();
     // Create the batch presenter
-    auto presenter = std::make_unique<BatchPresenterFriend>(&m_view, makeModel(), std::move(runsPresenter),
-                                                            std::move(eventPresenter), std::move(experimentPresenter),
-                                                            std::move(instrumentPresenter), std::move(savePresenter));
+    auto presenter = std::make_unique<BatchPresenterFriend>(
+        &m_view, makeModel(), std::move(runsPresenter),
+        std::move(eventPresenter), std::move(experimentPresenter),
+        std::move(roiPresenter), std::move(instrumentPresenter),
+        std::move(savePresenter));
     presenter->acceptMainPresenter(&m_mainPresenter);
     // Replace the constructed job runner with a mock
     m_jobRunner = new NiceMock<MockBatchJobRunner>();
@@ -531,6 +544,7 @@ private:
     TS_ASSERT(Mock::VerifyAndClearExpectations(m_runsPresenter));
     TS_ASSERT(Mock::VerifyAndClearExpectations(m_eventPresenter));
     TS_ASSERT(Mock::VerifyAndClearExpectations(m_experimentPresenter));
+    TS_ASSERT(Mock::VerifyAndClearExpectations(m_roiPresenter));
     TS_ASSERT(Mock::VerifyAndClearExpectations(m_instrumentPresenter));
     TS_ASSERT(Mock::VerifyAndClearExpectations(m_savePresenter));
     TS_ASSERT(Mock::VerifyAndClearExpectations(m_jobRunner));

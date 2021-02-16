@@ -86,10 +86,12 @@ void QtMainWindowView::initLayout() {
   auto makeEventPresenter = EventPresenterFactory();
   auto makeSaveSettingsPresenter = SavePresenterFactory();
   auto makeExperimentPresenter = ExperimentPresenterFactory(thetaTolerance);
+  auto makeRoiPresenter = RoiPresenterFactory();
   auto makeInstrumentPresenter = InstrumentPresenterFactory();
 
   auto makeBatchPresenter = std::make_unique<BatchPresenterFactory>(
-      std::move(makeRunsPresenter), std::move(makeEventPresenter), std::move(makeExperimentPresenter),
+      std::move(makeRunsPresenter), std::move(makeEventPresenter),
+      std::move(makeExperimentPresenter), std::move(makeRoiPresenter),
       std::move(makeInstrumentPresenter), std::move(makeSaveSettingsPresenter));
 
   // Create the presenter

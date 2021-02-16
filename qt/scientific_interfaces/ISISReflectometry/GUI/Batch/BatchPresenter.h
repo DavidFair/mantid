@@ -10,6 +10,7 @@
 #include "GUI/Event/IEventPresenter.h"
 #include "GUI/Experiment/IExperimentPresenter.h"
 #include "GUI/Instrument/IInstrumentPresenter.h"
+#include "GUI/RoiSelector/IRoiPresenter.h"
 #include "GUI/Runs/IRunsPresenter.h"
 #include "GUI/Save/ISavePresenter.h"
 #include "IBatchJobRunner.h"
@@ -37,6 +38,7 @@ public:
   BatchPresenter(IBatchView *view, Batch model, std::unique_ptr<IRunsPresenter> runsPresenter,
                  std::unique_ptr<IEventPresenter> eventPresenter,
                  std::unique_ptr<IExperimentPresenter> experimentPresenter,
+                 std::unique_ptr<IRoiPresenter> roiPresenter,
                  std::unique_ptr<IInstrumentPresenter> instrumentPresenter,
                  std::unique_ptr<ISavePresenter> savePresenter);
   BatchPresenter(BatchPresenter const &rhs) = delete;
@@ -107,6 +109,7 @@ private:
   std::unique_ptr<IRunsPresenter> m_runsPresenter;
   std::unique_ptr<IEventPresenter> m_eventPresenter;
   std::unique_ptr<IExperimentPresenter> m_experimentPresenter;
+  std::unique_ptr<IRoiPresenter> m_roiPresenter;
   std::unique_ptr<IInstrumentPresenter> m_instrumentPresenter;
   std::unique_ptr<ISavePresenter> m_savePresenter;
   bool m_unsavedBatchFlag;

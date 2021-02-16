@@ -9,6 +9,7 @@
 #include "GUI/Event/IEventView.h"
 #include "GUI/Experiment/IExperimentView.h"
 #include "GUI/Instrument/IInstrumentView.h"
+#include "GUI/RoiSelector/IRoiView.h"
 #include "GUI/Runs/IRunsView.h"
 #include "GUI/Save/ISaveView.h"
 #include <string>
@@ -47,6 +48,7 @@ public:
   virtual IEventView *eventHandling() const = 0;
   virtual ISaveView *save() const = 0;
   virtual IExperimentView *experiment() const = 0;
+  virtual IRoiView *roi() const = 0;
   virtual IInstrumentView *instrument() const = 0;
   virtual void clearAlgorithmQueue() = 0;
   virtual void setAlgorithmQueue(std::deque<MantidQt::API::IConfiguredAlgorithm_sptr> algorithms) = 0;
