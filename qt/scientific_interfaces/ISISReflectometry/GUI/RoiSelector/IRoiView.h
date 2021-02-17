@@ -16,6 +16,7 @@ class MANTIDQT_ISISREFLECTOMETRY_DLL RoiViewSubscriber {
 public:
   virtual void notifyWorkspaceChanged() = 0;
   virtual void notifyHome() = 0;
+  virtual void notifyRoiChanged() = 0;
 };
 
 /** @class IRoiView
@@ -33,7 +34,13 @@ public:
   virtual void plot2D(Mantid::API::MatrixWorkspace_sptr ws) = 0;
   virtual void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx,
                       std::string const &title) = 0;
+  virtual void clear1DPlot() = 0;
   virtual void zoomOut2D() = 0;
   virtual void zoomOut1D() = 0;
+  virtual void addRangeSelector(std::string const &name) = 0;
+  virtual void setRangeSelectorBounds(std::string const &name, double min,
+                                      double max) = 0;
+  virtual std::pair<double, double>
+  getRangeSelectorRange(std::string const &name) const = 0;
 };
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

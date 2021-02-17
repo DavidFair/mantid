@@ -166,6 +166,7 @@ public:
   MOCK_METHOD1(acceptMainPresenter, void(IBatchPresenter *));
   MOCK_METHOD0(notifyWorkspaceChanged, void());
   MOCK_METHOD0(notifyHome, void());
+  MOCK_METHOD0(notifyRoiChanged, void());
 };
 
 class MockInstrumentPresenter : public IInstrumentPresenter {

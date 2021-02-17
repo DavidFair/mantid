@@ -31,16 +31,23 @@ public:
 
   std::string getWorkspaceName() const override;
   void setWorkspaceName(std::string const &workspaceName) override;
+  void addRangeSelector(std::string const &name) override;
+  void setRangeSelectorBounds(std::string const &name, double min,
+                              double max) override;
+  std::pair<double, double>
+  getRangeSelectorRange(std::string const &name) const override;
 
   void plot2D(Mantid::API::MatrixWorkspace_sptr ws) override;
   void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx,
               std::string const &title) override;
+  void clear1DPlot() override;
   void zoomOut2D() override;
   void zoomOut1D() override;
 
 private slots:
   void on_actionUpdateWorkspace_triggered();
   void on_actionHome_triggered();
+  void onRoiChanged();
 
 private:
   void initLayout();
@@ -49,7 +56,8 @@ private:
 
   Ui::RoiWidget m_ui;
   RoiViewSubscriber *m_notifyee;
-  MantidQt::MantidWidgets::ContourPreviewPlot *m_2DPlot; // TODO use unique_ptr
+  MantidQt::MantidWidgets::PreviewPlot
+      *m_2DPlot; // TODO use unique_ptrs, and 2D plot should be contour plot
   MantidQt::MantidWidgets::PreviewPlot *m_1DPlot;
 
   friend class Encoder;

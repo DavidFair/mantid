@@ -21,12 +21,22 @@ class MANTIDQT_ISISREFLECTOMETRY_DLL RoiPresenter : public IRoiPresenter,
                                                     public RoiViewSubscriber {
 public:
   explicit RoiPresenter(IRoiView *view);
+
+  // IRoiPresenter overrides
   void acceptMainPresenter(IBatchPresenter *mainPresenter) override;
+
+  // RoiViewSubscriber overrides
   void notifyWorkspaceChanged() override;
   void notifyHome() override;
+  void notifyRoiChanged() override;
 
 private:
   IBatchPresenter *m_mainPresenter;
   IRoiView *m_view;
+
+  Mantid::API::MatrixWorkspace_sptr
+  reduceWorkspace(std::string const &workspaceName);
+  void refresh2DPlot(std::string const &inputName);
+  void refresh1DPlot(Mantid::API::MatrixWorkspace_sptr workspace);
 };
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

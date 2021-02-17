@@ -12,6 +12,13 @@
 #include "MantidAPI/AnalysisDataService.h"
 #include "MantidAPI/MatrixWorkspace.h"
 
+using Mantid::API::MatrixWorkspace;
+using Mantid::API::MatrixWorkspace_sptr;
+
+namespace {
+static constexpr const char *ROI_SELECTOR_NAME = "roi_selector";
+}
+
 namespace MantidQt::CustomInterfaces::ISISReflectometry {
 
 /** Constructor
@@ -19,16 +26,29 @@ namespace MantidQt::CustomInterfaces::ISISReflectometry {
  */
 RoiPresenter::RoiPresenter(IRoiView *view) : m_view(view) {
   m_view->subscribe(this);
+  m_view->addRangeSelector(ROI_SELECTOR_NAME);
 }
 
 void RoiPresenter::acceptMainPresenter(IBatchPresenter *mainPresenter) {
   m_mainPresenter = mainPresenter;
 }
 
+/** Notification received when the user-specified input workspace has changed
+ */
 void RoiPresenter::notifyWorkspaceChanged() {
   auto const inputName = m_view->getWorkspaceName();
+  auto reducedWorkspace = reduceWorkspace(inputName);
+  refresh2DPlot(inputName);
+  refresh1DPlot(reducedWorkspace);
+}
 
-  // Load and reduce the workspace
+/** Reduce the workspace using the default settings on the GUI
+ *
+ * @param inputName : the user-specified input workspace name
+ * @returns : the reduced workspace, or null if the reduction failed
+ */
+MatrixWorkspace_sptr
+RoiPresenter::reduceWorkspace(std::string const &inputName) {
   auto alg = Mantid::API::AlgorithmManager::Instance().create(
       "ReflectometryISISLoadAndProcess");
   alg->setChild(true);
@@ -41,30 +61,53 @@ void RoiPresenter::notifyWorkspaceChanged() {
   } catch (...) {
   }
 
-  // Refresh the 2D plot from the original workspace, if the workspace exists
-  // in the ADS. It may have had the TOF_ prefix added.
+  MatrixWorkspace_sptr reducedWorkspace;
+  if (alg->isExecuted()) {
+    reducedWorkspace = alg->getProperty("OutputWorkspaceBinned");
+  }
+  return reducedWorkspace;
+}
+
+/** Refresh the 2D plot from the input workspace, if it exists in the ADS; does
+ * nothing if not
+ *
+ * @param inputName : the user-specified input workspace name
+ */
+void RoiPresenter::refresh2DPlot(std::string const &inputName) {
   auto const &ads = Mantid::API::AnalysisDataService::Instance();
   auto workspaceName = inputName;
+  // Check the input workspace exists. Note that it may have had the the prefix
+  // "TOF_" applied when loaded by the reduction algorithm
   if (!ads.doesExist(workspaceName))
     workspaceName = std::string("TOF_") + workspaceName;
   if (ads.doesExist(workspaceName)) {
-    auto workspace =
-        ads.retrieveWS<Mantid::API::MatrixWorkspace>(workspaceName);
+    auto workspace = ads.retrieveWS<MatrixWorkspace>(workspaceName);
     m_view->plot2D(workspace);
+    // Set range selector bounds TODO implement properly when we have a 2D plot
+    m_view->setRangeSelectorBounds(ROI_SELECTOR_NAME, 0, 6);
   }
+}
 
-  // Refresh 1D plot of the reduced workspace
-  if (alg->isExecuted()) {
-    Mantid::API::MatrixWorkspace_sptr reducedWorkspace =
-        alg->getProperty("OutputWorkspaceBinned");
-    if (reducedWorkspace) {
-      m_view->plot1D(reducedWorkspace, 0, "IvsQ");
-    }
-  }
+/** Refresh the 1D plot of the reduced workspace, if it exists; does nothing if
+ * it is null
+ *
+ * @param workspace : the reduced workspace
+ */
+void RoiPresenter::refresh1DPlot(MatrixWorkspace_sptr workspace) {
+  if (!workspace)
+    return;
+
+  m_view->clear1DPlot();
+  for (size_t idx = 0; idx < workspace->getNumberHistograms(); ++idx)
+    m_view->plot1D(workspace, idx, "IvsQ");
 }
 
 void RoiPresenter::notifyHome() {
   m_view->zoomOut2D();
   m_view->zoomOut1D();
+}
+
+void RoiPresenter::notifyRoiChanged() {
+  auto const range = m_view->getRangeSelectorRange(ROI_SELECTOR_NAME);
 }
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry
