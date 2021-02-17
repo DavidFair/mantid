@@ -32,7 +32,7 @@ public:
   virtual void setWorkspaceName(std::string const &workspaceName) = 0;
   virtual void plot2D(Mantid::API::MatrixWorkspace_sptr ws) = 0;
   virtual void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx,
-                      std::string const &color, std::string const &title) = 0;
+                      std::string const &title) = 0;
   virtual void zoomOut2D() = 0;
   virtual void zoomOut1D() = 0;
 };

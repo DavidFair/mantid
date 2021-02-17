@@ -9,12 +9,12 @@
 #include "Common/QWidgetGroup.h"
 #include "IRoiView.h"
 #include "MantidAPI/MatrixWorkspace_fwd.h"
-#include "MantidQtWidgets/MplCpp/PanZoomTool.h"
 #include "ui_RoiWidget.h"
 #include <memory>
 
-namespace MantidQt::Widgets::MplCpp {
-class FigureCanvasQt;
+namespace MantidQt::MantidWidgets {
+class ContourPreviewPlot;
+class PreviewPlot;
 }
 
 namespace MantidQt::CustomInterfaces::ISISReflectometry {
@@ -34,7 +34,7 @@ public:
 
   void plot2D(Mantid::API::MatrixWorkspace_sptr ws) override;
   void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx,
-              std::string const &color, std::string const &title) override;
+              std::string const &title) override;
   void zoomOut2D() override;
   void zoomOut1D() override;
 
@@ -49,10 +49,8 @@ private:
 
   Ui::RoiWidget m_ui;
   RoiViewSubscriber *m_notifyee;
-  Widgets::MplCpp::FigureCanvasQt *m_canvas2D;
-  Widgets::MplCpp::FigureCanvasQt *m_canvas1D;
-  Widgets::MplCpp::PanZoomTool m_zoom2D;
-  Widgets::MplCpp::PanZoomTool m_zoom1D;
+  MantidQt::MantidWidgets::ContourPreviewPlot *m_2DPlot; // TODO use unique_ptr
+  MantidQt::MantidWidgets::PreviewPlot *m_1DPlot;
 
   friend class Encoder;
   friend class Decoder;

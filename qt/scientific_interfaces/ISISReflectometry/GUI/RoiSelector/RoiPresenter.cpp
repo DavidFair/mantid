@@ -57,9 +57,9 @@ void RoiPresenter::notifyWorkspaceChanged() {
   if (alg->isExecuted()) {
     Mantid::API::MatrixWorkspace_sptr reducedWorkspace =
         alg->getProperty("OutputWorkspaceBinned");
-    if (reducedWorkspace)
-      m_view->plot1D(reducedWorkspace, 0, "#000000",
-                     reducedWorkspace->getName());
+    if (reducedWorkspace) {
+      m_view->plot1D(reducedWorkspace, 0, "IvsQ");
+    }
   }
 }
 
