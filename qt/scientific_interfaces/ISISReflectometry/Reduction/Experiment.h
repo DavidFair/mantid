@@ -53,6 +53,7 @@ public:
 
   PerThetaDefaults const *defaultsForTheta(double thetaAngle, double tolerance) const;
   PerThetaDefaults const *wildcardDefaults() const;
+  void setProcessingInstructions(std::string const &processingInstructions);
 
 private:
   AnalysisMode m_analysisMode;
@@ -68,6 +69,8 @@ private:
 
   std::map<std::string, std::string> m_stitchParameters;
   std::vector<PerThetaDefaults> m_perThetaDefaults;
+
+  PerThetaDefaults *mutableWildcardDefaults();
 };
 
 MANTIDQT_ISISREFLECTOMETRY_DLL bool operator==(Experiment const &lhs, Experiment const &rhs);

@@ -311,6 +311,13 @@ void BatchPresenter::notifySetRoundPrecision(int &precision) { m_runsPresenter->
 
 void BatchPresenter::notifyResetRoundPrecision() { m_runsPresenter->resetRoundPrecision(); }
 
+void BatchPresenter::notifyProcessingInstructionsChanged(
+    std::string const &processingInstructions) {
+  m_experimentPresenter->notifyProcessingInstructionsChanged(
+      processingInstructions);
+  settingsChanged();
+}
+
 /** Get the percent of jobs that have been completed out of the current
     processing list
  */

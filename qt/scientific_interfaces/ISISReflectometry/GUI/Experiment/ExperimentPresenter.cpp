@@ -75,7 +75,15 @@ void ExperimentPresenter::notifyPerAngleDefaultsChanged(int, int column) {
   m_mainPresenter->notifySettingsChanged();
 }
 
-bool ExperimentPresenter::isProcessing() const { return m_mainPresenter->isProcessing(); }
+void ExperimentPresenter::notifyProcessingInstructionsChanged(
+    std::string const &processingInstructions) {
+  m_model.setProcessingInstructions(processingInstructions);
+  updateViewFromModel();
+}
+
+bool ExperimentPresenter::isProcessing() const {
+  return m_mainPresenter->isProcessing();
+}
 
 bool ExperimentPresenter::isAutoreducing() const { return m_mainPresenter->isAutoreducing(); }
 

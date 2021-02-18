@@ -12,11 +12,29 @@
 #include "MantidAPI/AnalysisDataService.h"
 #include "MantidAPI/MatrixWorkspace.h"
 
+#include <sstream>
+
 using Mantid::API::MatrixWorkspace;
 using Mantid::API::MatrixWorkspace_sptr;
 
 namespace {
 static constexpr const char *ROI_SELECTOR_NAME = "roi_selector";
+
+std::string processingInstructionsFromRanges(
+    std::vector<std::pair<double, double>> const &ranges) {
+  std::ostringstream ss;
+  bool isFirst = true;
+  for (auto range : ranges) {
+    if (!isFirst)
+      ss << '+';
+    // TODO conversion to int and factor of 10 is for experimental work with 1D
+    // plot; remove it when we have a real 2D plot and proper spectrum numbers
+    // here
+    ss << static_cast<int>(range.first * 10) << '-'
+       << static_cast<int>(range.second * 10);
+  }
+  return ss.str();
+}
 }
 
 namespace MantidQt::CustomInterfaces::ISISReflectometry {
@@ -108,6 +126,14 @@ void RoiPresenter::notifyHome() {
 }
 
 void RoiPresenter::notifyRoiChanged() {
+  // Convert the ROI to a string
   auto const range = m_view->getRangeSelectorRange(ROI_SELECTOR_NAME);
+  auto processingInstructions = processingInstructionsFromRanges({range});
+  // Notify main presenter to update settings
+  m_mainPresenter->notifyProcessingInstructionsChanged(processingInstructions);
+  // Refresh the reduced data plot
+  auto const inputName = m_view->getWorkspaceName();
+  auto reducedWorkspace = reduceWorkspace(inputName);
+  refresh1DPlot(reducedWorkspace);
 }
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

@@ -45,6 +45,11 @@ boost::optional<ProcessingInstructions> PerThetaDefaults::backgroundProcessingIn
   return m_backgroundProcessingInstructions;
 }
 
+void PerThetaDefaults::setProcessingInstructions(
+    std::string const &processingInstructions) {
+  m_processingInstructions = processingInstructions;
+}
+
 bool operator==(PerThetaDefaults const &lhs, PerThetaDefaults const &rhs) {
   return lhs.thetaOrWildcard() == rhs.thetaOrWildcard() && lhs.qRange() == rhs.qRange() &&
          lhs.scaleFactor() == rhs.scaleFactor() &&

@@ -42,6 +42,8 @@ public:
   virtual void notifySettingsChanged() = 0;
   virtual void notifySetRoundPrecision(int &precision) = 0;
   virtual void notifyResetRoundPrecision() = 0;
+  virtual void notifyProcessingInstructionsChanged(
+      std::string const &processingInstructions) = 0;
   virtual void notifyAnyBatchReductionResumed() = 0;
   virtual void notifyAnyBatchReductionPaused() = 0;
   virtual void notifyAnyBatchAutoreductionResumed() = 0;
