@@ -37,6 +37,7 @@ public:
   virtual void clear1DPlot() = 0;
   virtual void zoomOut2D() = 0;
   virtual void zoomOut1D() = 0;
+  virtual void set1DPlotScaleLogLog() = 0;
   virtual void addRangeSelector(std::string const &name) = 0;
   virtual void setRangeSelectorBounds(std::string const &name, double min,
                                       double max) = 0;

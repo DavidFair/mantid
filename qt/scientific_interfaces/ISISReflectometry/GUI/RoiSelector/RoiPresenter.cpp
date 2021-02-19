@@ -116,6 +116,7 @@ void RoiPresenter::refresh1DPlot(MatrixWorkspace_sptr workspace) {
   m_view->clear1DPlot();
   for (size_t idx = 0; idx < workspace->getNumberHistograms(); ++idx)
     m_view->plot1D(workspace, idx, "IvsQ");
+  m_view->set1DPlotScaleLogLog();
 }
 
 void RoiPresenter::notifyHome() {

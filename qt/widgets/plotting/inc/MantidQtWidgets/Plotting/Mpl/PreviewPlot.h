@@ -64,6 +64,12 @@ public:
   void allowRedraws(bool state);
   void replotData();
 
+  void setXScaleLog();
+  void setXScaleSquare();
+  void setXScaleLinear();
+  void setYScaleLog();
+  void setYScaleLinear();
+
 public slots:
   void clear();
   void resizeX();

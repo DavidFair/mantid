@@ -473,6 +473,22 @@ void PreviewPlot::setErrorBars(QAction *selected) {
  */
 void PreviewPlot::setYScaleType(QAction *selected) { setScaleType(AxisID::YLeft, selected->text()); }
 
+void PreviewPlot::setXScaleLog() { setScaleType(AxisID::XBottom, LOG_SCALE); }
+
+void PreviewPlot::setXScaleSquare() {
+  setScaleType(AxisID::XBottom, SQUARE_SCALE);
+}
+
+void PreviewPlot::setXScaleLinear() {
+  setScaleType(AxisID::XBottom, LINEAR_SCALE);
+}
+
+void PreviewPlot::setYScaleLog() { setScaleType(AxisID::YLeft, LOG_SCALE); }
+
+void PreviewPlot::setYScaleLinear() {
+  setScaleType(AxisID::YLeft, LINEAR_SCALE);
+}
+
 void PreviewPlot::setScaleType(AxisID id, const QString &actionName) {
   auto scaleType = actionName.toLower().toLatin1();
   auto axes = m_canvas->gca();

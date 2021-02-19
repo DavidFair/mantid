@@ -43,6 +43,7 @@ public:
   void clear1DPlot() override;
   void zoomOut2D() override;
   void zoomOut1D() override;
+  void set1DPlotScaleLogLog() override;
 
 private slots:
   void on_actionUpdateWorkspace_triggered();

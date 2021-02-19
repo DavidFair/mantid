@@ -94,4 +94,9 @@ QtRoiView::getRangeSelectorRange(std::string const &name) const {
 void QtRoiView::zoomOut2D() {}
 
 void QtRoiView::zoomOut1D() {}
+
+void QtRoiView::set1DPlotScaleLogLog() {
+  m_1DPlot->setXScaleLog();
+  m_1DPlot->setYScaleLog();
+}
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry
