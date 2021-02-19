@@ -16,14 +16,13 @@ using namespace MantidQt::Widgets::MplCpp;
 
 namespace {
 Mantid::Kernel::Logger g_log("ContourPreviewPlot");
-constexpr auto MANTID_PROJECTION = "mantid";
 } // namespace
 
 namespace MantidQt {
 namespace MantidWidgets {
 
 ContourPreviewPlot::ContourPreviewPlot(QWidget *parent, bool observeADS)
-    : QWidget(parent), m_canvas(new FigureCanvasQt(111, MANTID_PROJECTION, parent)),
+    : PreviewPlotBase(parent),
       m_wsRemovedObserver(*this, &ContourPreviewPlot::onWorkspaceRemoved),
       m_wsReplacedObserver(*this, &ContourPreviewPlot::onWorkspaceReplaced) {
   createLayout();
@@ -111,21 +110,5 @@ void ContourPreviewPlot::setWorkspace(const MatrixWorkspace_sptr &workspace) {
     g_log.warning("Cannot plot a null workspace.");
   }
 }
-
-/**
- * Gets the range of the supplied axis
- * @param axisID The axis to get the range for
- * @return The axis range
- */
-std::tuple<double, double> ContourPreviewPlot::getAxisRange(AxisID axisID) const {
-  switch (axisID) {
-  case AxisID::XBottom:
-    return m_canvas->gca().getXLim();
-  case AxisID::YLeft:
-    return m_canvas->gca().getYLim();
-  }
-  throw std::runtime_error("Incorrect AxisID provided. Axis types are XBottom and YLeft");
-}
-
 } // namespace MantidWidgets
 } // namespace MantidQt

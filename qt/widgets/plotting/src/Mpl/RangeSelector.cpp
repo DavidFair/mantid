@@ -5,7 +5,7 @@
 //   Institut Laue - Langevin & CSNS, Institute of High Energy Physics, CAS
 // SPDX - License - Identifier: GPL - 3.0 +
 #include "MantidQtWidgets/Plotting/Mpl/RangeSelector.h"
-#include "MantidQtWidgets/Plotting/Mpl/PreviewPlot.h"
+#include "MantidQtWidgets/Plotting/Mpl/PreviewPlotBase.h"
 
 using namespace MantidQt::Widgets::MplCpp;
 
@@ -22,7 +22,8 @@ QHash<QString, QVariant> defaultLineKwargs() {
 namespace MantidQt {
 namespace MantidWidgets {
 
-RangeSelector::RangeSelector(PreviewPlot *plot, SelectType type, bool visible, bool infoOnly, const QColor &colour)
+RangeSelector::RangeSelector(PreviewPlotBase *plot, SelectType type,
+                             bool visible, bool infoOnly, const QColor &colour)
     : QObject(), m_plot(plot),
       m_rangeMarker(std::make_unique<RangeMarker>(m_plot->canvas(), colour.name(QColor::HexRgb),
                                                   std::get<0>(getAxisRange(type)), std::get<1>(getAxisRange(type)),

@@ -8,7 +8,6 @@
 #include "MantidAPI/MatrixWorkspace.h"
 #include "MantidKernel/Logger.h"
 #include "MantidQtWidgets/MplCpp/ColorConverter.h"
-#include "MantidQtWidgets/MplCpp/FigureCanvasQt.h"
 #include "MantidQtWidgets/MplCpp/MantidAxes.h"
 
 #include <QAction>
@@ -33,7 +32,6 @@ namespace Python = MantidQt::Widgets::Common::Python;
 
 namespace {
 Mantid::Kernel::Logger g_log("PreviewPlot");
-constexpr auto MANTID_PROJECTION = "mantid";
 constexpr auto DRAGGABLE_LEGEND = true;
 constexpr auto PLOT_TOOL_NONE = "None";
 constexpr auto PLOT_TOOL_PAN = "Pan";
@@ -55,7 +53,7 @@ namespace MantidWidgets {
  * @param watchADS If true then ADS observers are added
  */
 PreviewPlot::PreviewPlot(QWidget *parent, bool observeADS)
-    : QWidget(parent), m_canvas{new FigureCanvasQt(111, MANTID_PROJECTION, parent)}, m_panZoomTool(m_canvas),
+    : PreviewPlotBase(parent), m_panZoomTool(m_canvas),
       m_wsRemovedObserver(*this, &PreviewPlot::onWorkspaceRemoved),
       m_wsReplacedObserver(*this, &PreviewPlot::onWorkspaceReplaced), m_axis("both"), m_style("sci"), m_useOffset(true),
       m_xAxisScale("linear"), m_yAxisScale("linear") {
@@ -88,18 +86,6 @@ void PreviewPlot::watchADS(bool on) {
     notificationCenter.removeObserver(m_wsRemovedObserver);
   }
 }
-
-/**
- * Gets the canvas used by the preview plot
- * @return The canvas
- */
-Widgets::MplCpp::FigureCanvasQt *PreviewPlot::canvas() const { return m_canvas; }
-
-/**
- * Converts the QPoint in pixels to axes coordinates
- * @return The axes coordinates of the QPoint
- */
-QPointF PreviewPlot::toDataCoords(const QPoint &point) const { return m_canvas->toDataCoords(point); }
 
 /**
  * Add a line for a given spectrum to the plot
@@ -173,70 +159,6 @@ void PreviewPlot::removeSpectrum(const QString &lineName) {
 }
 
 /**
- * Add a range selector to a preview plot
- * @param name The name to give the range selector
- * @param type The type of the range selector
- * @return The range selector
- */
-RangeSelector *PreviewPlot::addRangeSelector(const QString &name, RangeSelector::SelectType type) {
-  if (m_rangeSelectors.contains(name))
-    throw std::runtime_error("RangeSelector already exists on PreviewPlot.");
-
-  m_rangeSelectors[name] = new MantidWidgets::RangeSelector(this, type);
-  return m_rangeSelectors[name];
-}
-
-/**
- * Gets a range selector from the PreviewPlot
- * @param name The name of the range selector
- * @return The range selector
- */
-RangeSelector *PreviewPlot::getRangeSelector(const QString &name) const {
-  if (!m_rangeSelectors.contains(name))
-    throw std::runtime_error("RangeSelector was not found on PreviewPlot.");
-  return m_rangeSelectors[name];
-}
-
-/**
- * Add a single selector to a preview plot
- * @param name The name to give the single selector
- * @param type The type of the single selector
- * @return The single selector
- */
-SingleSelector *PreviewPlot::addSingleSelector(const QString &name, SingleSelector::SelectType type, double position) {
-  if (m_singleSelectors.contains(name))
-    throw std::runtime_error("SingleSelector already exists on PreviewPlot.");
-
-  m_singleSelectors[name] = new MantidWidgets::SingleSelector(this, type, position);
-  return m_singleSelectors[name];
-}
-
-/**
- * Gets a single selector from the PreviewPlot
- * @param name The name of the single selector
- * @return The single selector
- */
-SingleSelector *PreviewPlot::getSingleSelector(const QString &name) const {
-  if (!m_singleSelectors.contains(name))
-    throw std::runtime_error("SingleSelector was not found on PreviewPlot.");
-  return m_singleSelectors[name];
-}
-
-/**
- * Set whether or not one of the selectors on the preview plot is being moved or
- * not. This is required as we only want the user to be able to move one marker
- * at a time, otherwise the markers could get 'stuck' together.
- * @param active True if a selector is being moved.
- */
-void PreviewPlot::setSelectorActive(bool active) { m_selectorActive = active; }
-
-/**
- * Returns True if a selector is currently being moved on the preview plot.
- * @return True if a selector is currently being moved on the preview plot.
- */
-bool PreviewPlot::selectorActive() const { return m_selectorActive; }
-
-/**
  * Sets tight layout properties of the plot
  * @param args A hash of tight layout properties ("pad", "w_pad", "h_pad",
  * "rect")
@@ -293,20 +215,6 @@ void PreviewPlot::setAxisRange(const QPair<double, double> &range, AxisID axisID
     m_canvas->gca().setYLim(range.first, range.second);
     break;
   }
-}
-/**
- * Gets the range of the specified axis
- * @param axisID An enumeration defining the axis
- * @return The axis range
- */
-std::tuple<double, double> PreviewPlot::getAxisRange(AxisID axisID) {
-  switch (axisID) {
-  case AxisID::XBottom:
-    return m_canvas->gca().getXLim();
-  case AxisID::YLeft:
-    return m_canvas->gca().getYLim();
-  }
-  throw std::runtime_error("Incorrect AxisID provided. Axis types are XBottom and YLeft");
 }
 
 void PreviewPlot::replot() {

@@ -13,7 +13,7 @@
 
 namespace MantidQt {
 namespace MantidWidgets {
-class PreviewPlot;
+class PreviewPlotBase;
 
 /**
  * Displays a line for selecting a value on a previewplot in MPL
@@ -24,7 +24,8 @@ class EXPORT_OPT_MANTIDQT_PLOTTING SingleSelector : public QObject {
 public:
   enum SelectType { XSINGLE, YSINGLE };
 
-  SingleSelector(PreviewPlot *plot, SelectType type = XSINGLE, double position = 0.0, bool visible = true,
+  SingleSelector(PreviewPlotBase *plot, SelectType type = XSINGLE,
+                 double position = 0.0, bool visible = true,
                  const QColor &colour = Qt::black);
 
   void setColour(const QColor &colour);
@@ -58,7 +59,7 @@ private:
   QString selectTypeAsQString(const SelectType &type) const;
 
   /// The preview plot containing the range selector
-  PreviewPlot *m_plot;
+  PreviewPlotBase *m_plot;
   /// The single marker
   std::unique_ptr<MantidQt::Widgets::MplCpp::SingleMarker> m_singleMarker;
   /// The type of the single marker

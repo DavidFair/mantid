@@ -8,13 +8,12 @@
 
 #include "MantidAPI/AnalysisDataService.h"
 #include "MantidAPI/MatrixWorkspace.h"
-#include "MantidQtWidgets/Plotting/AxisID.h"
 #include "MantidQtWidgets/Plotting/DllOption.h"
+#include "MantidQtWidgets/Plotting/Mpl/PreviewPlotBase.h"
 
 #include <Poco/NObserver.h>
 
 #include <QColor>
-#include <QWidget>
 
 namespace MantidQt {
 namespace Widgets {
@@ -28,7 +27,7 @@ class FigureCanvasQt;
 
 namespace MantidWidgets {
 
-class EXPORT_OPT_MANTIDQT_PLOTTING ContourPreviewPlot : public QWidget {
+class EXPORT_OPT_MANTIDQT_PLOTTING ContourPreviewPlot : public PreviewPlotBase {
   Q_OBJECT
 
 public:
@@ -41,16 +40,11 @@ public:
 
   void setWorkspace(const Mantid::API::MatrixWorkspace_sptr &workspace);
 
-  std::tuple<double, double> getAxisRange(AxisID axisID) const;
-
 private:
   void createLayout();
 
   void onWorkspaceRemoved(Mantid::API::WorkspacePreDeleteNotification_ptr nf);
   void onWorkspaceReplaced(Mantid::API::WorkspaceBeforeReplaceNotification_ptr nf);
-
-  /// Canvas objects
-  Widgets::MplCpp::FigureCanvasQt *m_canvas;
 
   /// Observers for ADS Notifications
   Poco::NObserver<ContourPreviewPlot, Mantid::API::WorkspacePreDeleteNotification> m_wsRemovedObserver;

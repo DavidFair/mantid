@@ -13,7 +13,7 @@
 
 namespace MantidQt {
 namespace MantidWidgets {
-class PreviewPlot;
+class PreviewPlotBase;
 
 /**
  * Displays a two lines for selecting a range on a previewplot
@@ -24,7 +24,8 @@ class EXPORT_OPT_MANTIDQT_PLOTTING RangeSelector : public QObject {
 public:
   enum SelectType { XMINMAX, YMINMAX };
 
-  RangeSelector(PreviewPlot *plot, SelectType type = XMINMAX, bool visible = true, bool infoOnly = false,
+  RangeSelector(PreviewPlotBase *plot, SelectType type = XMINMAX,
+                bool visible = true, bool infoOnly = false,
                 const QColor &colour = Qt::black);
 
   void setColour(const QColor &colour);
@@ -61,7 +62,7 @@ private:
   QString selectTypeAsQString(const SelectType &type) const;
 
   /// The preview plot containing the range selector
-  PreviewPlot *m_plot;
+  PreviewPlotBase *m_plot;
   /// The range marker
   std::unique_ptr<MantidQt::Widgets::MplCpp::RangeMarker> m_rangeMarker;
   /// The type of the range marker
