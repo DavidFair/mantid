@@ -27,11 +27,8 @@ std::string processingInstructionsFromRanges(
   for (auto range : ranges) {
     if (!isFirst)
       ss << '+';
-    // TODO conversion to int and factor of 10 is for experimental work with 1D
-    // plot; remove it when we have a real 2D plot and proper spectrum numbers
-    // here
-    ss << static_cast<int>(range.first * 10) << '-'
-       << static_cast<int>(range.second * 10);
+    ss << static_cast<int>(range.first) << '-'
+       << static_cast<int>(range.second);
   }
   return ss.str();
 }
@@ -101,8 +98,9 @@ void RoiPresenter::refresh2DPlot(std::string const &inputName) {
   if (ads.doesExist(workspaceName)) {
     auto workspace = ads.retrieveWS<MatrixWorkspace>(workspaceName);
     m_view->plot2D(workspace);
-    // Set range selector bounds TODO implement properly when we have a 2D plot
-    m_view->setRangeSelectorBounds(ROI_SELECTOR_NAME, 0, 6);
+    m_view->setRangeSelectorBounds(
+        ROI_SELECTOR_NAME, 0,
+        static_cast<double>(workspace->getNumberHistograms()));
   }
 }
 

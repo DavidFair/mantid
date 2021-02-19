@@ -56,8 +56,7 @@ private:
 
   Ui::RoiWidget m_ui;
   RoiViewSubscriber *m_notifyee;
-  MantidQt::MantidWidgets::PreviewPlot
-      *m_2DPlot; // TODO use unique_ptrs, and 2D plot should be contour plot
+  MantidQt::MantidWidgets::ContourPreviewPlot *m_2DPlot; // TODO use unique_ptrs
   MantidQt::MantidWidgets::PreviewPlot *m_1DPlot;
 
   friend class Encoder;

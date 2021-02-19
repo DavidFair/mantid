@@ -22,7 +22,7 @@ namespace MantidQt::CustomInterfaces::ISISReflectometry {
  * @param parent :: [input] The parent of this widget
  */
 QtRoiView::QtRoiView(QWidget *parent)
-    : QWidget(parent), m_2DPlot(new PreviewPlot(this)),
+    : QWidget(parent), m_2DPlot(new ContourPreviewPlot(this)),
       m_1DPlot(new PreviewPlot(this)) {
   initLayout();
 }
@@ -38,13 +38,7 @@ void QtRoiView::initLayout() {
   m_ui.plotsLayout->addWidget(m_1DPlot);
 }
 
-void QtRoiView::plot2D(MatrixWorkspace_sptr ws) {
-  // TODO Change this to setWorkspace when changed to contour plot.
-  // For now use 1D plot to demonstrate selection functionality
-  // m_2DPlot->setWorkspace(ws);
-  m_2DPlot->clear();
-  m_2DPlot->addSpectrum(QString::fromStdString(ws->getName()), ws, 51);
-}
+void QtRoiView::plot2D(MatrixWorkspace_sptr ws) { m_2DPlot->setWorkspace(ws); }
 
 void QtRoiView::plot1D(MatrixWorkspace_sptr ws, size_t wsIdx,
                        std::string const &title) {
