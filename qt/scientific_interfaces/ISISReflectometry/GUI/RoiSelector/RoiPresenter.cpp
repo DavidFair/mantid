@@ -99,8 +99,8 @@ void RoiPresenter::refresh2DPlot(std::string const &inputName) {
     auto workspace = ads.retrieveWS<MatrixWorkspace>(workspaceName);
     m_view->plot2D(workspace);
     m_view->setRangeSelectorBounds(
-        ROI_SELECTOR_NAME, 0,
-        static_cast<double>(workspace->getNumberHistograms()));
+        ROI_SELECTOR_NAME, 1,
+        static_cast<double>(workspace->getNumberHistograms() - 1));
   }
 }
 

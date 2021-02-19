@@ -6,11 +6,15 @@
 // SPDX - License - Identifier: GPL - 3.0 +
 #pragma once
 
+#include "MantidQtWidgets/MplCpp/PanZoomTool.h"
 #include "MantidQtWidgets/Plotting/AxisID.h"
 #include "MantidQtWidgets/Plotting/Mpl/RangeSelector.h"
 #include "MantidQtWidgets/Plotting/Mpl/SingleSelector.h"
 
 #include <QWidget>
+
+class QAction;
+class QActionGroup;
 
 namespace MantidQt::Widgets::MplCpp {
 class FigureCanvasQt;
@@ -22,6 +26,7 @@ namespace MantidQt::MantidWidgets {
  * Base class for common functionality between different types of preview plots
  */
 class EXPORT_OPT_MANTIDQT_PLOTTING PreviewPlotBase : public QWidget {
+  Q_OBJECT
 
 public:
   PreviewPlotBase(QWidget *parent);
@@ -46,7 +51,16 @@ public:
   void setSelectorActive(bool active);
   bool selectorActive() const;
 
-  virtual void replot();
+public slots:
+  void resetView();
+  virtual void replot() = 0;
+
+signals:
+  void mouseDown(const QPoint &point);
+  void mouseUp(const QPoint &point);
+  void mouseMove(const QPoint &point);
+
+  void redraw();
 
 protected:
   // Canvas objects
@@ -57,5 +71,21 @@ protected:
   QMap<QString, SingleSelector *> m_singleSelectors;
   // Whether or not a selector is currently being moved
   bool m_selectorActive;
+  // Canvas tools
+  Widgets::MplCpp::PanZoomTool m_panZoomTool;
+  // Context menu actions
+  QActionGroup *m_contextPlotTools;
+  QAction *m_contextResetView;
+
+  virtual void createActions();
+  virtual void showContextMenu(QMouseEvent *evt);
+
+  void switchPlotTool(QAction *selected);
+
+  bool eventFilter(QObject *watched, QEvent *evt) override;
+  bool handleMousePressEvent(QMouseEvent *evt);
+  bool handleMouseReleaseEvent(QMouseEvent *evt);
+  bool handleMouseMoveEvent(QMouseEvent *evt);
+  bool handleWindowResizeEvent();
 };
 } // namespace MantidQt::MantidWidgets

@@ -110,5 +110,10 @@ void ContourPreviewPlot::setWorkspace(const MatrixWorkspace_sptr &workspace) {
     g_log.warning("Cannot plot a null workspace.");
   }
 }
+
+void ContourPreviewPlot::replot() {
+  m_canvas->draw();
+  emit redraw();
+}
 } // namespace MantidWidgets
 } // namespace MantidQt

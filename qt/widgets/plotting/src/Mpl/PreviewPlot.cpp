@@ -12,7 +12,6 @@
 
 #include <QAction>
 #include <QContextMenuEvent>
-#include <QEvent>
 #include <QMenu>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -53,7 +52,7 @@ namespace MantidWidgets {
  * @param watchADS If true then ADS observers are added
  */
 PreviewPlot::PreviewPlot(QWidget *parent, bool observeADS)
-    : PreviewPlotBase(parent), m_panZoomTool(m_canvas),
+    : PreviewPlotBase(parent),
       m_wsRemovedObserver(*this, &PreviewPlot::onWorkspaceRemoved),
       m_wsReplacedObserver(*this, &PreviewPlot::onWorkspaceReplaced), m_axis("both"), m_style("sci"), m_useOffset(true),
       m_xAxisScale("linear"), m_yAxisScale("linear") {
@@ -62,7 +61,6 @@ PreviewPlot::PreviewPlot(QWidget *parent, bool observeADS)
 
   m_selectorActive = false;
 
-  m_canvas->installEventFilterToMplCanvas(this);
   watchADS(observeADS);
 }
 
@@ -252,15 +250,6 @@ void PreviewPlot::clear() {
 void PreviewPlot::resizeX() { m_canvas->gca().autoscaleView(true, false); }
 
 /**
- * Reset the whole view to show all of the data
- */
-void PreviewPlot::resetView() {
-  m_panZoomTool.zoomOut();
-  if (!m_panZoomTool.isPanEnabled() && !m_panZoomTool.isZoomEnabled())
-    QTimer::singleShot(0, this, SLOT(replot()));
-}
-
-/**
  * Set the face colour for the canvas
  * @param colour A new colour for the figure facecolor
  */
@@ -295,102 +284,6 @@ void PreviewPlot::showLegend(bool visible) { m_contextLegend->setChecked(visible
  * @return The current colour of the canvas
  */
 QColor PreviewPlot::canvasColour() const { return m_canvas->gcf().faceColor(); }
-
-/**
- * Capture events destined for the canvas
- * @param watched Target object (Unused)
- * @param evt A pointer to the event object
- * @return True if the event should be stopped, false otherwise
- */
-bool PreviewPlot::eventFilter(QObject *watched, QEvent *evt) {
-  Q_UNUSED(watched);
-  bool stopEvent{false};
-  switch (evt->type()) {
-  case QEvent::ContextMenu:
-    // handled by mouse press events below as we need to
-    // stop the canvas getting mouse events in some circumstances
-    // to disable zooming/panning
-    stopEvent = true;
-    break;
-  case QEvent::MouseButtonPress:
-    stopEvent = handleMousePressEvent(static_cast<QMouseEvent *>(evt));
-    break;
-  case QEvent::MouseButtonRelease:
-    stopEvent = handleMouseReleaseEvent(static_cast<QMouseEvent *>(evt));
-    break;
-  case QEvent::MouseMove:
-    stopEvent = handleMouseMoveEvent(static_cast<QMouseEvent *>(evt));
-    break;
-  case QEvent::Resize:
-    stopEvent = handleWindowResizeEvent();
-    break;
-  default:
-    break;
-  }
-  return stopEvent;
-}
-
-/**
- * Handler called when the event filter recieves a mouse press event
- * @param evt A pointer to the event
- * @return True if the event propagation should be stopped, false otherwise
- */
-bool PreviewPlot::handleMousePressEvent(QMouseEvent *evt) {
-  bool stopEvent(false);
-  // right-click events are reserved for the context menu
-  // show when the mouse click is released
-  if (evt->buttons() & Qt::RightButton) {
-    stopEvent = true;
-  } else if (evt->buttons() & Qt::LeftButton) {
-    const auto position = evt->pos();
-    if (!position.isNull())
-      emit mouseDown(position);
-  }
-  return stopEvent;
-}
-
-/**
- * Handler called when the event filter recieves a mouse release event
- * @param evt A pointer to the event
- * @return True if the event propagation should be stopped, false otherwise
- */
-bool PreviewPlot::handleMouseReleaseEvent(QMouseEvent *evt) {
-  bool stopEvent(false);
-  if (evt->button() == Qt::RightButton) {
-    stopEvent = true;
-    showContextMenu(evt);
-  } else if (evt->button() == Qt::LeftButton) {
-    const auto position = evt->pos();
-    if (!position.isNull())
-      emit mouseUp(position);
-    QTimer::singleShot(0, this, SLOT(replot()));
-  }
-  return stopEvent;
-}
-
-/**
- * Handler called when the event filter recieves a mouse move event
- * @param evt A pointer to the event
- * @return True if the event propagation should be stopped, false otherwise
- */
-bool PreviewPlot::handleMouseMoveEvent(QMouseEvent *evt) {
-  bool stopEvent(false);
-  if (evt->buttons() == Qt::LeftButton) {
-    const auto position = evt->pos();
-    if (!position.isNull())
-      emit mouseMove(position);
-  }
-  return stopEvent;
-}
-
-/**
- * Handler called when the event filter recieves a window resize event
- * @return True if the event propagation should be stopped, false otherwise
- */
-bool PreviewPlot::handleWindowResizeEvent() {
-  QTimer::singleShot(0, this, SLOT(replot()));
-  return false;
-}
 
 /**
  * Display the context menu for the canvas
@@ -552,29 +445,6 @@ void PreviewPlot::removeLegend() {
   auto legend = m_canvas->gca().legendInstance();
   if (!legend.pyobj().is_none()) {
     m_canvas->gca().legendInstance().remove();
-  }
-}
-
-/**
- * Called when a different plot tool is selected. Enables the
- * appropriate mode on the canvas
- * @param selected A QAction pointer denoting the desired tool
- */
-void PreviewPlot::switchPlotTool(QAction *selected) {
-  QString toolName = selected->text();
-  if (toolName == PLOT_TOOL_NONE) {
-    m_panZoomTool.enableZoom(false);
-    m_panZoomTool.enablePan(false);
-    replot();
-  } else if (toolName == PLOT_TOOL_PAN) {
-    m_panZoomTool.enablePan(true);
-    m_canvas->draw();
-  } else if (toolName == PLOT_TOOL_ZOOM) {
-    m_panZoomTool.enableZoom(true);
-    m_canvas->draw();
-  } else {
-    // if a tool is added to the menu but no handler is added
-    g_log.warning("Unknown plot tool selected.");
   }
 }
 

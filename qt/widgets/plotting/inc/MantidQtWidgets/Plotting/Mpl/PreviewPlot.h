@@ -9,7 +9,6 @@
 #include "MantidAPI/AnalysisDataService.h"
 #include "MantidAPI/MatrixWorkspace_fwd.h"
 #include "MantidQtWidgets/MplCpp/Line2D.h"
-#include "MantidQtWidgets/MplCpp/PanZoomTool.h"
 #include "MantidQtWidgets/Plotting/DllOption.h"
 #include "MantidQtWidgets/Plotting/Mpl/PreviewPlotBase.h"
 
@@ -19,9 +18,6 @@
 #include <QPair>
 #include <QVariant>
 #include <list>
-
-class QAction;
-class QActionGroup;
 
 namespace MantidQt {
 namespace Widgets {
@@ -71,7 +67,6 @@ public:
 public slots:
   void clear();
   void resizeX();
-  void resetView();
   void setCanvasColour(const QColor &colour);
   void setLinesWithErrors(const QStringList &labels);
   void setLinesWithoutErrors(const QStringList &labels);
@@ -79,11 +74,6 @@ public slots:
   void replot() override;
 
 signals:
-  void mouseDown(const QPoint &point);
-  void mouseUp(const QPoint &point);
-  void mouseMove(const QPoint &point);
-
-  void redraw();
   void resetSelectorBounds();
 
 public:
@@ -91,19 +81,11 @@ public:
   bool legendIsVisible() const;
   QStringList linesWithErrors() const;
 
-protected:
-  bool eventFilter(QObject *watched, QEvent *evt) override;
-
 private:
-  bool handleMousePressEvent(QMouseEvent *evt);
-  bool handleMouseReleaseEvent(QMouseEvent *evt);
-  bool handleMouseMoveEvent(QMouseEvent *evt);
-  bool handleWindowResizeEvent();
-
-  void showContextMenu(QMouseEvent *evt);
+  void createActions() override;
+  void showContextMenu(QMouseEvent *evt) override;
 
   void createLayout();
-  void createActions();
 
   void onWorkspaceRemoved(Mantid::API::WorkspacePreDeleteNotification_ptr nf);
   void onWorkspaceReplaced(Mantid::API::WorkspaceBeforeReplaceNotification_ptr nf);
@@ -111,7 +93,6 @@ private:
   void regenerateLegend();
   void removeLegend();
 
-  void switchPlotTool(QAction *selected);
   void setXScaleType(QAction *selected);
   void setYScaleType(QAction *selected);
   void setErrorBars(QAction *selected);
@@ -146,9 +127,6 @@ private:
   // Map an axis to an override axis label
   QMap<AxisID, char const *> m_axisLabels;
 
-  // Canvas tools
-  Widgets::MplCpp::PanZoomTool m_panZoomTool;
-
   // Observers for ADS Notifications
   Poco::NObserver<PreviewPlot, Mantid::API::WorkspacePreDeleteNotification> m_wsRemovedObserver;
   Poco::NObserver<PreviewPlot, Mantid::API::WorkspaceBeforeReplaceNotification> m_wsReplacedObserver;
@@ -163,8 +141,6 @@ private:
   std::string m_yAxisScale;
 
   // Context menu actions
-  QActionGroup *m_contextPlotTools;
-  QAction *m_contextResetView;
   QActionGroup *m_contextXScale, *m_contextYScale;
   QAction *m_contextLegend;
   QActionGroup *m_contextErrorBars;

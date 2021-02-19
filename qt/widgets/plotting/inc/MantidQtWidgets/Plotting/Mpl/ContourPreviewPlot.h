@@ -40,6 +40,9 @@ public:
 
   void setWorkspace(const Mantid::API::MatrixWorkspace_sptr &workspace);
 
+public slots:
+  void replot() override;
+
 private:
   void createLayout();
 
