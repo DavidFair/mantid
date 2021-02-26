@@ -39,7 +39,8 @@ namespace MantidQt::CustomInterfaces::ISISReflectometry {
 /** Constructor
  * @param view :: The view we are handling
  */
-RoiPresenter::RoiPresenter(IRoiView *view) : m_view(view) {
+RoiPresenter::RoiPresenter(IRoiView *view, std::string const &loadAlgorithm)
+    : m_view(view), m_loadAlgorithm(loadAlgorithm) {
   m_view->subscribe(this);
   m_view->addRangeSelector(ROI_SELECTOR_NAME);
 }
@@ -52,9 +53,19 @@ void RoiPresenter::acceptMainPresenter(IBatchPresenter *mainPresenter) {
  */
 void RoiPresenter::notifyWorkspaceChanged() {
   auto const inputName = m_view->getWorkspaceName();
-  auto reducedWorkspace = reduceWorkspace(inputName);
+  loadWorkspace(inputName);
   refresh2DPlot(inputName);
-  refresh1DPlot(reducedWorkspace);
+
+  auto reducedWorkspace = reduceWorkspace(inputName);
+  if (reducedWorkspace)
+    refresh1DPlot(reducedWorkspace);
+}
+
+void RoiPresenter::loadWorkspace(std::string const &inputName) {
+  auto alg = Mantid::API::AlgorithmManager::Instance().create(m_loadAlgorithm);
+  alg->setProperty("Filename", inputName);
+  alg->setProperty("OutputWorkspace", inputName);
+  alg->execute();
 }
 
 /** Reduce the workspace using the default settings on the GUI
@@ -90,18 +101,14 @@ RoiPresenter::reduceWorkspace(std::string const &inputName) {
  */
 void RoiPresenter::refresh2DPlot(std::string const &inputName) {
   auto const &ads = Mantid::API::AnalysisDataService::Instance();
-  auto workspaceName = inputName;
-  // Check the input workspace exists. Note that it may have had the the prefix
-  // "TOF_" applied when loaded by the reduction algorithm
-  if (!ads.doesExist(workspaceName))
-    workspaceName = std::string("TOF_") + workspaceName;
-  if (ads.doesExist(workspaceName)) {
-    auto workspace = ads.retrieveWS<MatrixWorkspace>(workspaceName);
-    m_view->plot2D(workspace);
-    m_view->setRangeSelectorBounds(
-        ROI_SELECTOR_NAME, 1,
-        static_cast<double>(workspace->getNumberHistograms() - 1));
-  }
+  if (!ads.doesExist(inputName))
+    return;
+
+  auto workspace = ads.retrieveWS<MatrixWorkspace>(inputName);
+  m_view->plot2D(workspace);
+  m_view->setRangeSelectorBounds(
+      ROI_SELECTOR_NAME, 1,
+      static_cast<double>(workspace->getNumberHistograms() - 1));
 }
 
 /** Refresh the 1D plot of the reduced workspace, if it exists; does nothing if

@@ -20,7 +20,7 @@ ISIS Reflectometry Interface.
 class MANTIDQT_ISISREFLECTOMETRY_DLL RoiPresenter : public IRoiPresenter,
                                                     public RoiViewSubscriber {
 public:
-  explicit RoiPresenter(IRoiView *view);
+  RoiPresenter(IRoiView *view, std::string const &loadAlgorithm);
 
   // IRoiPresenter overrides
   void acceptMainPresenter(IBatchPresenter *mainPresenter) override;
@@ -33,7 +33,9 @@ public:
 private:
   IBatchPresenter *m_mainPresenter;
   IRoiView *m_view;
+  std::string m_loadAlgorithm;
 
+  void loadWorkspace(std::string const &workspaceName);
   Mantid::API::MatrixWorkspace_sptr
   reduceWorkspace(std::string const &workspaceName);
   void refresh2DPlot(std::string const &inputName);
