@@ -53,6 +53,8 @@ void QtRoiView::on_actionUpdateWorkspace_triggered() {
 
 void QtRoiView::on_actionHome_triggered() { m_notifyee->notifyHome(); }
 
+void QtRoiView::on_actionApply_triggered() { m_notifyee->notifyApply(); }
+
 std::string QtRoiView::getText(QLineEdit const &lineEdit) const {
   return lineEdit.text().toStdString();
 }
@@ -74,10 +76,10 @@ void QtRoiView::addRangeSelector(std::string const &name) {
   auto rangeSelector = m_2DPlot->addRangeSelector(
       QString::fromStdString(name), RangeSelector::SelectType::YMINMAX);
   connect(rangeSelector, SIGNAL(selectionChanged(double, double)), this,
-          SLOT(onRoiChanged()));
+          SLOT(onRangeSelectionChanged()));
 }
 
-void QtRoiView::onRoiChanged() { m_notifyee->notifyRoiChanged(); }
+void QtRoiView::onRangeSelectionChanged() { m_notifyee->notifyRoiChanged(); }
 
 void QtRoiView::setRangeSelectorBounds(std::string const &name, double min,
                                        double max) {

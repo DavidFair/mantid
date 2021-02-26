@@ -24,10 +24,12 @@ public:
 
   // IRoiPresenter overrides
   void acceptMainPresenter(IBatchPresenter *mainPresenter) override;
+  std::string getSelectedRoi() override;
 
   // RoiViewSubscriber overrides
   void notifyWorkspaceChanged() override;
   void notifyHome() override;
+  void notifyApply() override;
   void notifyRoiChanged() override;
 
 private:
@@ -36,8 +38,6 @@ private:
   std::string m_loadAlgorithm;
 
   void loadWorkspace(std::string const &workspaceName);
-  Mantid::API::MatrixWorkspace_sptr
-  reduceWorkspace(std::string const &workspaceName);
   void refresh2DPlot(std::string const &inputName);
   void refresh1DPlot(Mantid::API::MatrixWorkspace_sptr workspace);
 };

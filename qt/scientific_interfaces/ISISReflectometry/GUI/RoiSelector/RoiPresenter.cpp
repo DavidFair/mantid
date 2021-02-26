@@ -56,7 +56,7 @@ void RoiPresenter::notifyWorkspaceChanged() {
   loadWorkspace(inputName);
   refresh2DPlot(inputName);
 
-  auto reducedWorkspace = reduceWorkspace(inputName);
+  auto reducedWorkspace = m_mainPresenter->reduceWorkspace(inputName);
   if (reducedWorkspace)
     refresh1DPlot(reducedWorkspace);
 }
@@ -66,32 +66,6 @@ void RoiPresenter::loadWorkspace(std::string const &inputName) {
   alg->setProperty("Filename", inputName);
   alg->setProperty("OutputWorkspace", inputName);
   alg->execute();
-}
-
-/** Reduce the workspace using the default settings on the GUI
- *
- * @param inputName : the user-specified input workspace name
- * @returns : the reduced workspace, or null if the reduction failed
- */
-MatrixWorkspace_sptr
-RoiPresenter::reduceWorkspace(std::string const &inputName) {
-  auto alg = Mantid::API::AlgorithmManager::Instance().create(
-      "ReflectometryISISLoadAndProcess");
-  alg->setChild(true);
-  alg->setProperty("InputRunList", inputName);
-  auto properties = m_mainPresenter->rowProcessingProperties();
-  for (auto kvp : properties)
-    alg->setProperty(kvp.first, kvp.second);
-  try {
-    alg->execute();
-  } catch (...) {
-  }
-
-  MatrixWorkspace_sptr reducedWorkspace;
-  if (alg->isExecuted()) {
-    reducedWorkspace = alg->getProperty("OutputWorkspaceBinned");
-  }
-  return reducedWorkspace;
 }
 
 /** Refresh the 2D plot from the input workspace, if it exists in the ADS; does
@@ -131,15 +105,22 @@ void RoiPresenter::notifyHome() {
   m_view->zoomOut1D();
 }
 
+void RoiPresenter::notifyApply() { m_mainPresenter->notifyRoiSaved(); }
+
 void RoiPresenter::notifyRoiChanged() {
-  // Convert the ROI to a string
-  auto const range = m_view->getRangeSelectorRange(ROI_SELECTOR_NAME);
-  auto processingInstructions = processingInstructionsFromRanges({range});
-  // Notify main presenter to update settings
-  m_mainPresenter->notifyProcessingInstructionsChanged(processingInstructions);
   // Refresh the reduced data plot
   auto const inputName = m_view->getWorkspaceName();
-  auto reducedWorkspace = reduceWorkspace(inputName);
+  auto reducedWorkspace = m_mainPresenter->reduceWorkspace(inputName);
   refresh1DPlot(reducedWorkspace);
+}
+
+/** Get the currently selected ROI range
+ *
+ * returns : the ROI as a grouping pattern string (see the GroupDetectors
+ * algorithm)
+ */
+std::string RoiPresenter::getSelectedRoi() {
+  auto const range = m_view->getRangeSelectorRange(ROI_SELECTOR_NAME);
+  return processingInstructionsFromRanges({range});
 }
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

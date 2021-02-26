@@ -67,8 +67,7 @@ public:
   void notifySettingsChanged() override;
   void notifySetRoundPrecision(int &precision) override;
   void notifyResetRoundPrecision() override;
-  void notifyProcessingInstructionsChanged(
-      std::string const &processingInstructions) override;
+  void notifyRoiSaved() override;
   void notifyAnyBatchReductionResumed() override;
   void notifyAnyBatchReductionPaused() override;
   void notifyAnyBatchAutoreductionResumed() override;
@@ -88,6 +87,8 @@ public:
   std::string instrumentName() const override;
   int percentComplete() const override;
   AlgorithmRuntimeProps rowProcessingProperties() const override;
+  Mantid::API::MatrixWorkspace_sptr
+  reduceWorkspace(std::string const &workspaceName) override;
 
   // WorkspaceObserver overrides
   void postDeleteHandle(const std::string &wsName) override;

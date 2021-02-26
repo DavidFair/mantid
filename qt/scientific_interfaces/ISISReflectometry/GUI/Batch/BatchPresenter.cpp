@@ -14,6 +14,8 @@
 #include "GUI/Runs/IRunsPresenter.h"
 #include "GUI/Save/ISavePresenter.h"
 #include "IBatchView.h"
+#include "MantidAPI/AlgorithmManager.h"
+#include "MantidAPI/MatrixWorkspace.h"
 #include "MantidQtWidgets/Common/HelpWindow.h"
 
 namespace MantidQt {
@@ -21,6 +23,7 @@ namespace CustomInterfaces {
 namespace ISISReflectometry {
 
 using API::IConfiguredAlgorithm_sptr;
+using Mantid::API::MatrixWorkspace_sptr;
 
 /** Constructor
  * @param view :: [input] The view we are managing
@@ -311,10 +314,9 @@ void BatchPresenter::notifySetRoundPrecision(int &precision) { m_runsPresenter->
 
 void BatchPresenter::notifyResetRoundPrecision() { m_runsPresenter->resetRoundPrecision(); }
 
-void BatchPresenter::notifyProcessingInstructionsChanged(
-    std::string const &processingInstructions) {
-  m_experimentPresenter->notifyProcessingInstructionsChanged(
-      processingInstructions);
+void BatchPresenter::notifyRoiSaved() {
+  auto const roi = m_roiPresenter->getSelectedRoi();
+  m_experimentPresenter->notifyProcessingInstructionsChanged(roi);
   settingsChanged();
 }
 
@@ -341,6 +343,39 @@ void BatchPresenter::clearADSHandle() {
   m_jobRunner->notifyAllWorkspacesDeleted();
   m_runsPresenter->notifyRowOutputsChanged();
   m_runsPresenter->notifyRowStateChanged();
+}
+
+/** Reduce the workspace using the default settings on the GUI
+ * and the currently-selected regions of interest
+ *
+ * @param inputName : the user-specified input workspace name
+ * @returns : the reduced workspace, or null if the reduction failed
+ */
+MatrixWorkspace_sptr
+BatchPresenter::reduceWorkspace(std::string const &inputName) {
+  // Create reduction algorithm
+  auto alg = Mantid::API::AlgorithmManager::Instance().create(
+      "ReflectometryISISLoadAndProcess");
+  alg->setChild(true);
+  // Set input workspace
+  alg->setProperty("InputRunList", inputName);
+  // Set default properties from settings tabs
+  auto properties = rowProcessingProperties();
+  for (auto kvp : properties)
+    alg->setProperty(kvp.first, kvp.second);
+  try {
+    alg->execute();
+  } catch (...) {
+  }
+  // Set processing instructions from currently selected ROI
+  auto const roi = m_roiPresenter->getSelectedRoi();
+  alg->setProperty("ProcessingInstructions", roi);
+  // Perform the reduction
+  MatrixWorkspace_sptr reducedWorkspace;
+  if (alg->isExecuted()) {
+    reducedWorkspace = alg->getProperty("OutputWorkspaceBinned");
+  }
+  return reducedWorkspace;
 }
 } // namespace ISISReflectometry
 } // namespace CustomInterfaces

@@ -16,6 +16,7 @@ class MANTIDQT_ISISREFLECTOMETRY_DLL RoiViewSubscriber {
 public:
   virtual void notifyWorkspaceChanged() = 0;
   virtual void notifyHome() = 0;
+  virtual void notifyApply() = 0;
   virtual void notifyRoiChanged() = 0;
 };
 

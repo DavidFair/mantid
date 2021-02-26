@@ -103,6 +103,16 @@
      </item>
     </layout>
    </item>
+   <item>
+    <widget class="QPushButton" name="applyButton">
+     <property name="toolTip">
+      <string>Apply the currently selected regions of interest to the batch settings</string>
+     </property>
+     <property name="text">
+      <string>Apply to Batch</string>
+     </property>
+    </widget>
+   </item>
   </layout>
   <action name="actionUpdateWorkspace">
    <property name="text">
@@ -118,6 +128,14 @@
    </property>
    <property name="toolTip">
     <string>Reset pan and zoom to default level</string>
+   </property>
+  </action>
+  <action name="actionApply">
+   <property name="text">
+    <string>Apply</string>
+   </property>
+   <property name="toolTip">
+    <string>Apply the currently selected regions of interest to the batch settings</string>
    </property>
   </action>
  </widget>
@@ -164,6 +182,22 @@
     <hint type="sourcelabel">
      <x>879</x>
      <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>applyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionApply</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>466</x>
+     <y>321</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

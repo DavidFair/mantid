@@ -21,5 +21,6 @@ class IRoiPresenter {
 public:
   virtual ~IRoiPresenter() = default;
   virtual void acceptMainPresenter(IBatchPresenter *mainPresenter) = 0;
+  virtual std::string getSelectedRoi() = 0;
 };
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

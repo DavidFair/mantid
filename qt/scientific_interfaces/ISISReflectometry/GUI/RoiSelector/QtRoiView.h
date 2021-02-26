@@ -48,7 +48,8 @@ public:
 private slots:
   void on_actionUpdateWorkspace_triggered();
   void on_actionHome_triggered();
-  void onRoiChanged();
+  void on_actionApply_triggered();
+  void onRangeSelectionChanged();
 
 private:
   void initLayout();

@@ -42,8 +42,7 @@ public:
   virtual void notifySettingsChanged() = 0;
   virtual void notifySetRoundPrecision(int &precision) = 0;
   virtual void notifyResetRoundPrecision() = 0;
-  virtual void notifyProcessingInstructionsChanged(
-      std::string const &processingInstructions) = 0;
+  virtual void notifyRoiSaved() = 0;
   virtual void notifyAnyBatchReductionResumed() = 0;
   virtual void notifyAnyBatchReductionPaused() = 0;
   virtual void notifyAnyBatchAutoreductionResumed() = 0;
@@ -60,6 +59,8 @@ public:
   virtual bool requestClose() const = 0;
   virtual int percentComplete() const = 0;
   virtual AlgorithmRuntimeProps rowProcessingProperties() const = 0;
+  virtual Mantid::API::MatrixWorkspace_sptr
+  reduceWorkspace(std::string const &workspaceName) = 0;
 
   virtual bool isBatchUnsaved() const = 0;
   virtual void setBatchUnsaved() = 0;

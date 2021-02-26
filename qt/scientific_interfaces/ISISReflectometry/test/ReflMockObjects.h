@@ -79,7 +79,7 @@ public:
   MOCK_METHOD0(notifySettingsChanged, void());
   MOCK_METHOD1(notifySetRoundPrecision, void(int &));
   MOCK_METHOD0(notifyResetRoundPrecision, void());
-  MOCK_METHOD1(notifyProcessingInstructionsChanged, void(std::string const &));
+  MOCK_METHOD0(notifyRoiSaved, void());
   MOCK_CONST_METHOD0(isProcessing, bool());
   MOCK_CONST_METHOD0(isAutoreducing, bool());
   MOCK_CONST_METHOD0(isAnyBatchProcessing, bool());
@@ -90,6 +90,8 @@ public:
   MOCK_METHOD1(setUnsavedBatchFlag, void(bool));
   MOCK_CONST_METHOD0(percentComplete, int());
   MOCK_CONST_METHOD0(rowProcessingProperties, AlgorithmRuntimeProps());
+  MOCK_METHOD1(reduceWorkspace,
+               Mantid::API::MatrixWorkspace_sptr(std::string const &));
   MOCK_CONST_METHOD0(requestClose, bool());
   MOCK_CONST_METHOD0(instrument, Mantid::Geometry::Instrument_const_sptr());
   MOCK_CONST_METHOD0(instrumentName, std::string());
@@ -166,9 +168,7 @@ public:
 class MockRoiPresenter : public IRoiPresenter {
 public:
   MOCK_METHOD1(acceptMainPresenter, void(IBatchPresenter *));
-  MOCK_METHOD0(notifyWorkspaceChanged, void());
-  MOCK_METHOD0(notifyHome, void());
-  MOCK_METHOD0(notifyRoiChanged, void());
+  MOCK_METHOD0(getSelectedRoi, std::string());
 };
 
 class MockInstrumentPresenter : public IInstrumentPresenter {
