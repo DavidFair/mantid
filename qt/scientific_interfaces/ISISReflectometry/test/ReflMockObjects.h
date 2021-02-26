@@ -310,6 +310,7 @@ public:
 class MockBatchJobRunner : public IBatchJobRunner {
 public:
   MockBatchJobRunner(){};
+  MOCK_CONST_METHOD0(model, Batch());
   MOCK_CONST_METHOD0(isProcessing, bool());
   MOCK_CONST_METHOD0(isAutoreducing, bool());
   MOCK_CONST_METHOD0(percentComplete, int());

@@ -17,6 +17,7 @@
 #include "MantidAPI/AlgorithmManager.h"
 #include "MantidAPI/MatrixWorkspace.h"
 #include "MantidQtWidgets/Common/HelpWindow.h"
+#include "RowProcessingAlgorithm.h"
 
 namespace MantidQt {
 namespace CustomInterfaces {
@@ -353,27 +354,23 @@ void BatchPresenter::clearADSHandle() {
  */
 MatrixWorkspace_sptr
 BatchPresenter::reduceWorkspace(std::string const &inputName) {
-  // Create reduction algorithm
-  auto alg = Mantid::API::AlgorithmManager::Instance().create(
-      "ReflectometryISISLoadAndProcess");
-  alg->setChild(true);
-  // Set input workspace
-  alg->setProperty("InputRunList", inputName);
-  // Set default properties from settings tabs
-  auto properties = rowProcessingProperties();
-  for (auto kvp : properties)
-    alg->setProperty(kvp.first, kvp.second);
-  try {
-    alg->execute();
-  } catch (...) {
-  }
-  // Set processing instructions from currently selected ROI
-  auto const roi = m_roiPresenter->getSelectedRoi();
-  alg->setProperty("ProcessingInstructions", roi);
-  // Perform the reduction
+  // Create a copy of the batch model with updated processing instructions
+  auto batch = m_jobRunner->model();
+  auto experiment = Experiment(batch.experiment());
+  experiment.setProcessingInstructions(m_roiPresenter->getSelectedRoi());
+  auto const batchCopy = Batch(experiment, batch.instrument(),
+                               batch.mutableRunsTable(), batch.slicing());
+  // Get configuration information for the reduction algorithm
+  auto conf = createConfiguredAlgorithm(batchCopy, inputName);
+  conf->algorithm()->setChild(true);
+  // Update the properties on the actual algorithm
+  for (auto const &propKvp : conf->properties())
+    conf->algorithm()->setProperty(propKvp.first, propKvp.second);
+  // Execute the algorithm and extract the results
+  conf->algorithm()->execute();
   MatrixWorkspace_sptr reducedWorkspace;
-  if (alg->isExecuted()) {
-    reducedWorkspace = alg->getProperty("OutputWorkspaceBinned");
+  if (conf->algorithm()->isExecuted()) {
+    reducedWorkspace = getOutputWorkspace(conf->algorithm());
   }
   return reducedWorkspace;
 }

@@ -25,6 +25,7 @@ class MANTIDQT_ISISREFLECTOMETRY_DLL BatchJobRunner : public IBatchJobRunner {
 public:
   explicit BatchJobRunner(Batch batch);
 
+  Batch model() const override;
   bool isProcessing() const override;
   bool isAutoreducing() const override;
   int percentComplete() const override;

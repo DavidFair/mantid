@@ -17,6 +17,7 @@ namespace MantidQt {
 namespace CustomInterfaces {
 namespace ISISReflectometry {
 
+using API::ConfiguredAlgorithm;
 using API::IConfiguredAlgorithm_sptr;
 using Mantid::API::IAlgorithm_sptr;
 using AlgorithmRuntimeProps = std::map<std::string, std::string>;
@@ -232,7 +233,31 @@ IConfiguredAlgorithm_sptr createConfiguredAlgorithm(Batch const &model, Row &row
   return jobAlgorithm;
 }
 
-AlgorithmRuntimeProps createAlgorithmRuntimeProps(Batch const &model, Row const &row) {
+/** Create a configured algorithm based on the settings in a batch.
+ *
+ * @param model : the reduction configuration model
+ * @param workspaceName : the workspace to run the algorithm on
+ */
+IConfiguredAlgorithm_sptr
+createConfiguredAlgorithm(Batch const &model,
+                          std::string const &workspaceName) {
+  // Create the algorithm
+  auto alg = Mantid::API::AlgorithmManager::Instance().create(
+      "ReflectometryISISLoadAndProcess");
+  alg->setRethrows(true);
+
+  // Set the algorithm properties from the model
+  auto properties = createAlgorithmRuntimeProps(model);
+  updateInputWorkspacesProperties(properties, {workspaceName});
+
+  // Return the configured algorithm
+  auto configuredAlgorithm =
+      std::make_shared<ConfiguredAlgorithm>(alg, properties);
+  return configuredAlgorithm;
+}
+
+AlgorithmRuntimeProps createAlgorithmRuntimeProps(Batch const &model,
+                                                  Row const &row) {
   // Create properties for the model
   auto properties = createAlgorithmRuntimeProps(model);
   // Update properties specific to this row - the per-angle options based on
@@ -252,6 +277,13 @@ AlgorithmRuntimeProps createAlgorithmRuntimeProps(Batch const &model) {
   // Update properties from the wildcard row in the per-theta defaults table
   updatePerThetaDefaultProperties(properties, model.wildcardDefaults());
   return properties;
+}
+
+Mantid::API::MatrixWorkspace_sptr
+getOutputWorkspace(const IAlgorithm_sptr &algorithm) {
+  Mantid::API::MatrixWorkspace_sptr workspace =
+      algorithm->getProperty("OutputWorkspaceBinned");
+  return workspace;
 }
 } // namespace ISISReflectometry
 } // namespace CustomInterfaces

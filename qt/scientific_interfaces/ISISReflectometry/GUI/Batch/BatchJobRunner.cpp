@@ -40,6 +40,8 @@ BatchJobRunner::BatchJobRunner(Batch batch)
     : m_batch(std::move(batch)), m_isProcessing(false), m_isAutoreducing(false), m_reprocessFailed(false),
       m_processAll(false), m_processPartial(false) {}
 
+Batch BatchJobRunner::model() const { return m_batch; }
+
 bool BatchJobRunner::isProcessing() const { return m_isProcessing; }
 
 bool BatchJobRunner::isAutoreducing() const { return m_isAutoreducing; }
