@@ -44,5 +44,8 @@ public:
                                       double max) = 0;
   virtual std::pair<double, double>
   getRangeSelectorRange(std::string const &name) const = 0;
+  virtual void
+  setRangeSelectorRange(std::string const &name,
+                        std::pair<double, double> const &range) = 0;
 };
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

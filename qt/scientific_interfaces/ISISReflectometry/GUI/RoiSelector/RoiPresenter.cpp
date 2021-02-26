@@ -11,6 +11,7 @@
 #include "MantidAPI/AlgorithmManager.h"
 #include "MantidAPI/AnalysisDataService.h"
 #include "MantidAPI/MatrixWorkspace.h"
+#include "MantidKernel/UserStringParser.h"
 
 #include <sstream>
 
@@ -20,8 +21,13 @@ using Mantid::API::MatrixWorkspace_sptr;
 namespace {
 static constexpr const char *ROI_SELECTOR_NAME = "roi_selector";
 
-std::string processingInstructionsFromRanges(
-    std::vector<std::pair<double, double>> const &ranges) {
+/** Convert a vector of ranges to a string
+ *
+ * @param ranges : a vector of ranges, where each range is a pair of doubles
+ * @returns : a grouping pattern string (see GroupDetectors for details)
+ */
+std::string
+roiStringFromRanges(std::vector<std::pair<double, double>> const &ranges) {
   std::ostringstream ss;
   bool isFirst = true;
   for (auto range : ranges) {
@@ -31,6 +37,26 @@ std::string processingInstructionsFromRanges(
        << static_cast<int>(range.second);
   }
   return ss.str();
+}
+
+/** Convert a string to a vector of ranges
+ *
+ * @param roiString : a grouping pattern string (see GroupDetectors for details)
+ * @returns : a vector of ranges, where each range is a pair of doubles
+ */
+std::vector<std::pair<double, double>>
+roiRangesFromString(std::string const &roiString) {
+  auto result = std::vector<std::pair<double, double>>();
+  auto parser = Mantid::Kernel::UserStringParser();
+  auto const ranges = parser.parse(roiString);
+  std::transform(ranges.cbegin(), ranges.cend(), std::back_inserter(result),
+                 [](auto const &range) {
+                   auto minmax =
+                       std::minmax_element(range.cbegin(), range.cend());
+                   return std::make_pair(static_cast<double>(*minmax.first),
+                                         static_cast<double>(*minmax.second));
+                 });
+  return result;
 }
 }
 
@@ -119,8 +145,20 @@ void RoiPresenter::notifyRoiChanged() {
  * returns : the ROI as a grouping pattern string (see the GroupDetectors
  * algorithm)
  */
-std::string RoiPresenter::getSelectedRoi() {
+std::string RoiPresenter::getSelectedRoi() const {
+  // TODO expand to support multiple ranges
   auto const range = m_view->getRangeSelectorRange(ROI_SELECTOR_NAME);
-  return processingInstructionsFromRanges({range});
+  return roiStringFromRanges({range});
+}
+
+void RoiPresenter::setSelectedRoi(std::string const &roi) {
+  auto ranges = roiRangesFromString(roi);
+  if (ranges.size() < 1)
+    throw std::runtime_error(
+        std::string("No valid ranges found parsing regions of interest: ") +
+        roi);
+  // TODO expand to support multiple ranges
+  auto range = ranges[0];
+  m_view->setRangeSelectorRange(ROI_SELECTOR_NAME, range);
 }
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

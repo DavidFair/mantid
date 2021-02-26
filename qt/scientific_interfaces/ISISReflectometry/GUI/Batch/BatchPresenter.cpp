@@ -23,6 +23,10 @@ namespace MantidQt {
 namespace CustomInterfaces {
 namespace ISISReflectometry {
 
+namespace {
+Mantid::Kernel::Logger g_log("Reflectometry GUI");
+}
+
 using API::IConfiguredAlgorithm_sptr;
 using Mantid::API::MatrixWorkspace_sptr;
 
@@ -266,6 +270,16 @@ std::string BatchPresenter::instrumentName() const { return m_mainPresenter->ins
 void BatchPresenter::settingsChanged() {
   setBatchUnsaved();
   m_runsPresenter->settingsChanged();
+
+  // Update the ROI tab with the processing instructions
+  auto const defaults = m_jobRunner->model().experiment().wildcardDefaults();
+  if (defaults && defaults->processingInstructions()) {
+    try {
+      m_roiPresenter->setSelectedRoi(*(defaults->processingInstructions()));
+    } catch (std::runtime_error const &ex) {
+      g_log.error(ex.what());
+    }
+  }
 }
 
 /**
@@ -367,8 +381,13 @@ BatchPresenter::reduceWorkspace(std::string const &inputName) {
   for (auto const &propKvp : conf->properties())
     conf->algorithm()->setProperty(propKvp.first, propKvp.second);
   // Execute the algorithm and extract the results
-  conf->algorithm()->execute();
   MatrixWorkspace_sptr reducedWorkspace;
+  try {
+    conf->algorithm()->execute();
+  } catch (std::runtime_error const &ex) {
+    g_log.error(ex.what());
+    return reducedWorkspace;
+  }
   if (conf->algorithm()->isExecuted()) {
     reducedWorkspace = getOutputWorkspace(conf->algorithm());
   }

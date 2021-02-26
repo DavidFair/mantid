@@ -168,7 +168,8 @@ public:
 class MockRoiPresenter : public IRoiPresenter {
 public:
   MOCK_METHOD1(acceptMainPresenter, void(IBatchPresenter *));
-  MOCK_METHOD0(getSelectedRoi, std::string());
+  MOCK_CONST_METHOD0(getSelectedRoi, std::string());
+  MOCK_METHOD1(setSelectedRoi, void(std::string const &));
 };
 
 class MockInstrumentPresenter : public IInstrumentPresenter {

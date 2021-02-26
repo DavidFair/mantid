@@ -36,6 +36,8 @@ public:
                               double max) override;
   std::pair<double, double>
   getRangeSelectorRange(std::string const &name) const override;
+  void setRangeSelectorRange(std::string const &name,
+                             std::pair<double, double> const &range) override;
 
   void plot2D(Mantid::API::MatrixWorkspace_sptr ws) override;
   void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx,

@@ -24,7 +24,8 @@ public:
 
   // IRoiPresenter overrides
   void acceptMainPresenter(IBatchPresenter *mainPresenter) override;
-  std::string getSelectedRoi() override;
+  std::string getSelectedRoi() const override;
+  void setSelectedRoi(std::string const &) override;
 
   // RoiViewSubscriber overrides
   void notifyWorkspaceChanged() override;

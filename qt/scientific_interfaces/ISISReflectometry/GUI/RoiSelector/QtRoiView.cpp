@@ -93,6 +93,12 @@ QtRoiView::getRangeSelectorRange(std::string const &name) const {
   return rangeSelector->getRange();
 }
 
+void QtRoiView::setRangeSelectorRange(std::string const &name,
+                                      std::pair<double, double> const &range) {
+  auto rangeSelector = m_2DPlot->getRangeSelector(QString::fromStdString(name));
+  rangeSelector->setRange(range);
+}
+
 void QtRoiView::zoomOut2D() {}
 
 void QtRoiView::zoomOut1D() {}
