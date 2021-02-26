@@ -66,7 +66,7 @@ namespace MantidQt::CustomInterfaces::ISISReflectometry {
  * @param view :: The view we are handling
  */
 RoiPresenter::RoiPresenter(IRoiView *view, std::string const &loadAlgorithm)
-    : m_view(view), m_loadAlgorithm(loadAlgorithm) {
+    : m_view(view), m_loadAlgorithm(loadAlgorithm), m_loaded(false) {
   m_view->subscribe(this);
   m_view->addRangeSelector(ROI_SELECTOR_NAME);
 }
@@ -82,9 +82,7 @@ void RoiPresenter::notifyWorkspaceChanged() {
   loadWorkspace(inputName);
   refresh2DPlot(inputName);
 
-  auto reducedWorkspace = m_mainPresenter->reduceWorkspace(inputName);
-  if (reducedWorkspace)
-    refresh1DPlot(reducedWorkspace);
+  refresh1DPlot();
 }
 
 void RoiPresenter::loadWorkspace(std::string const &inputName) {
@@ -92,6 +90,7 @@ void RoiPresenter::loadWorkspace(std::string const &inputName) {
   alg->setProperty("Filename", inputName);
   alg->setProperty("OutputWorkspace", inputName);
   alg->execute();
+  m_loaded = true;
 }
 
 /** Refresh the 2D plot from the input workspace, if it exists in the ADS; does
@@ -116,7 +115,8 @@ void RoiPresenter::refresh2DPlot(std::string const &inputName) {
  *
  * @param workspace : the reduced workspace
  */
-void RoiPresenter::refresh1DPlot(MatrixWorkspace_sptr workspace) {
+void RoiPresenter::refresh1DPlot() {
+  auto workspace = m_mainPresenter->reduceWorkspace(m_view->getWorkspaceName());
   if (!workspace)
     return;
 
@@ -133,12 +133,7 @@ void RoiPresenter::notifyHome() {
 
 void RoiPresenter::notifyApply() { m_mainPresenter->notifyRoiSaved(); }
 
-void RoiPresenter::notifyRoiChanged() {
-  // Refresh the reduced data plot
-  auto const inputName = m_view->getWorkspaceName();
-  auto reducedWorkspace = m_mainPresenter->reduceWorkspace(inputName);
-  refresh1DPlot(reducedWorkspace);
-}
+void RoiPresenter::notifyRoiChanged() { refresh1DPlot(); }
 
 /** Get the currently selected ROI range
  *

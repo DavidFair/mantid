@@ -37,9 +37,10 @@ private:
   IBatchPresenter *m_mainPresenter;
   IRoiView *m_view;
   std::string m_loadAlgorithm;
+  bool m_loaded;
 
   void loadWorkspace(std::string const &workspaceName);
   void refresh2DPlot(std::string const &inputName);
-  void refresh1DPlot(Mantid::API::MatrixWorkspace_sptr workspace);
+  void refresh1DPlot();
 };
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry
