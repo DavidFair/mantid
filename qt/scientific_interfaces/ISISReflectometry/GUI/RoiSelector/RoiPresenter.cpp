@@ -19,6 +19,8 @@ using Mantid::API::MatrixWorkspace;
 using Mantid::API::MatrixWorkspace_sptr;
 
 namespace {
+Mantid::Kernel::Logger g_log("Reflectometry GUI");
+
 static constexpr const char *ROI_SELECTOR_NAME = "roi_selector";
 
 /** Convert a vector of ranges to a string
@@ -86,11 +88,18 @@ void RoiPresenter::notifyWorkspaceChanged() {
 }
 
 void RoiPresenter::loadWorkspace(std::string const &inputName) {
+  if (Mantid::API::AnalysisDataService::Instance().doesExist(inputName))
+    return;
+
   auto alg = Mantid::API::AlgorithmManager::Instance().create(m_loadAlgorithm);
   alg->setProperty("Filename", inputName);
   alg->setProperty("OutputWorkspace", inputName);
-  alg->execute();
-  m_loaded = true;
+  try {
+    alg->execute();
+    m_loaded = true;
+  } catch (std::runtime_error const &ex) {
+    g_log.error(ex.what());
+  }
 }
 
 /** Refresh the 2D plot from the input workspace, if it exists in the ADS; does
@@ -105,9 +114,16 @@ void RoiPresenter::refresh2DPlot(std::string const &inputName) {
 
   auto workspace = ads.retrieveWS<MatrixWorkspace>(inputName);
   m_view->plot2D(workspace);
-  m_view->setRangeSelectorBounds(
-      ROI_SELECTOR_NAME, 1,
-      static_cast<double>(workspace->getNumberHistograms() - 1));
+
+  auto const nSpec = workspace->getNumberHistograms();
+  auto const minSpec =
+      static_cast<double>(workspace->getSpectrum(0).getSpectrumNo());
+  auto const maxSpec =
+      static_cast<double>(workspace->getSpectrum(nSpec - 1).getSpectrumNo());
+  m_view->setBounds(minSpec, maxSpec);
+  m_view->setRangeSelectorBounds(ROI_SELECTOR_NAME, minSpec, maxSpec);
+  m_view->setRangeSelectorRange(ROI_SELECTOR_NAME,
+                                std::make_pair(minSpec + 1, maxSpec - 1));
 }
 
 /** Refresh the 1D plot of the reduced workspace, if it exists; does nothing if

@@ -196,23 +196,8 @@ void PreviewPlot::setAxisLabel(AxisID const &axisID, char const *const label) {
     m_canvas->gca().setYLabel(label);
     return;
   }
-  throw std::runtime_error("Incorrect AxisID provided. Axis types are XBottom and YLeft");
-}
-
-/**
- * Set the range of the specified axis
- * @param range The new range
- * @param axisID An enumeration defining the axis
- */
-void PreviewPlot::setAxisRange(const QPair<double, double> &range, AxisID axisID) {
-  switch (axisID) {
-  case AxisID::XBottom:
-    m_canvas->gca().setXLim(range.first, range.second);
-    break;
-  case AxisID::YLeft:
-    m_canvas->gca().setYLim(range.first, range.second);
-    break;
-  }
+  throw std::runtime_error(
+      "Incorrect AxisID provided. Axis types are XBottom and YLeft");
 }
 
 void PreviewPlot::replot() {

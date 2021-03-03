@@ -224,6 +224,23 @@ std::tuple<double, double> PreviewPlotBase::getAxisRange(AxisID axisID) const {
 }
 
 /**
+ * Set the range of the specified axis
+ * @param range The new range
+ * @param axisID An enumeration defining the axis
+ */
+void PreviewPlotBase::setAxisRange(const QPair<double, double> &range,
+                                   AxisID axisID) {
+  switch (axisID) {
+  case AxisID::XBottom:
+    m_canvas->gca().setXLim(range.first, range.second);
+    break;
+  case AxisID::YLeft:
+    m_canvas->gca().setYLim(range.first, range.second);
+    break;
+  }
+}
+
+/**
  * Converts the QPoint in pixels to axes coordinates
  * @return The axes coordinates of the QPoint
  */
@@ -300,5 +317,4 @@ void PreviewPlotBase::setSelectorActive(bool active) {
  * @return True if a selector is currently being moved on the preview plot.
  */
 bool PreviewPlotBase::selectorActive() const { return m_selectorActive; }
-
 } // namespace MantidQt::MantidWidgets

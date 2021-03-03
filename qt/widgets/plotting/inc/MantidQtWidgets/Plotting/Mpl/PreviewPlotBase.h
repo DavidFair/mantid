@@ -35,6 +35,8 @@ public:
   Widgets::MplCpp::FigureCanvasQt *canvas() const;
   std::tuple<double, double>
   getAxisRange(AxisID axisID = AxisID::XBottom) const;
+  void setAxisRange(const QPair<double, double> &range,
+                    AxisID axisID = AxisID::XBottom);
   QPointF toDataCoords(const QPoint &point) const;
 
   RangeSelector *

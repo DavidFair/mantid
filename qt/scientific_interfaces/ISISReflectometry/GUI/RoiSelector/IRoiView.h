@@ -47,5 +47,6 @@ public:
   virtual void
   setRangeSelectorRange(std::string const &name,
                         std::pair<double, double> const &range) = 0;
+  virtual void setBounds(double minValue, double maxValue) = 0;
 };
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

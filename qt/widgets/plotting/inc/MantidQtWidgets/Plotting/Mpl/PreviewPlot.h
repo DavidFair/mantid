@@ -58,8 +58,6 @@ public:
 
   void setOverrideAxisLabel(AxisID const &axisID, char const *const label);
   void tickLabelFormat(char *axis, char *style, bool useOffset);
-  void setAxisRange(const QPair<double, double> &range,
-                    AxisID axisID = AxisID::XBottom);
 
   void allowRedraws(bool state);
   void replotData();

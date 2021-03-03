@@ -99,6 +99,12 @@ void QtRoiView::setRangeSelectorRange(std::string const &name,
   rangeSelector->setRange(range);
 }
 
+void QtRoiView::setBounds(double minValue, double maxValue) {
+  m_2DPlot->setAxisRange(QPair(minValue, maxValue),
+                         MantidWidgets::AxisID::YLeft);
+  m_2DPlot->replot();
+}
+
 void QtRoiView::zoomOut2D() {}
 
 void QtRoiView::zoomOut1D() {}
