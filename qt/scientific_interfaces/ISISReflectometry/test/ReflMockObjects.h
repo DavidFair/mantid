@@ -80,6 +80,7 @@ public:
   MOCK_METHOD1(notifySetRoundPrecision, void(int &));
   MOCK_METHOD0(notifyResetRoundPrecision, void());
   MOCK_METHOD0(notifyRoiSaved, void());
+  MOCK_METHOD0(notifyRoiDataUpdated, void());
   MOCK_CONST_METHOD0(isProcessing, bool());
   MOCK_CONST_METHOD0(isAutoreducing, bool());
   MOCK_CONST_METHOD0(isAnyBatchProcessing, bool());
@@ -162,12 +163,14 @@ public:
   MOCK_METHOD0(notifyAutoreductionResumed, void());
   MOCK_METHOD1(notifyInstrumentChanged, void(std::string const &));
   MOCK_METHOD0(restoreDefaults, void());
-  MOCK_METHOD1(notifyProcessingInstructionsChanged, void(std::string const &));
+  MOCK_METHOD2(notifyProcessingInstructionsChanged,
+               void(std::string const &, boost::optional<double> const &));
 };
 
 class MockRoiPresenter : public IRoiPresenter {
 public:
   MOCK_METHOD1(acceptMainPresenter, void(IBatchPresenter *));
+  MOCK_CONST_METHOD0(getAngle, boost::optional<double>());
   MOCK_CONST_METHOD0(getSelectedRoi, std::string());
   MOCK_METHOD1(setSelectedRoi, void(std::string const &));
 };
@@ -311,7 +314,7 @@ public:
 class MockBatchJobRunner : public IBatchJobRunner {
 public:
   MockBatchJobRunner(){};
-  MOCK_CONST_METHOD0(model, Batch());
+  MOCK_CONST_METHOD0(model, Batch const &());
   MOCK_CONST_METHOD0(isProcessing, bool());
   MOCK_CONST_METHOD0(isAutoreducing, bool());
   MOCK_CONST_METHOD0(percentComplete, int());

@@ -32,6 +32,8 @@ public:
   virtual ~IRoiView() = default;
   virtual std::string getWorkspaceName() const = 0;
   virtual void setWorkspaceName(std::string const &workspaceName) = 0;
+  virtual double getAngle() const = 0;
+  virtual void setAngle(double angle) = 0;
   virtual void plot2D(Mantid::API::MatrixWorkspace_sptr ws) = 0;
   virtual void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx,
                       std::string const &title) = 0;

@@ -9,8 +9,10 @@ namespace MantidQt {
 namespace CustomInterfaces {
 namespace ISISReflectometry {
 
-Batch::Batch(Experiment const &experiment, Instrument const &instrument, RunsTable &runsTable, Slicing const &slicing)
-    : m_experiment(experiment), m_instrument(instrument), m_runsTable(runsTable), m_slicing(slicing) {}
+Batch::Batch(Experiment const &experiment, Instrument const &instrument,
+             RunsTable &runsTable, Slicing const &slicing)
+    : m_experiment(experiment), m_instrument(instrument),
+      m_runsTable(runsTable), m_slicing(slicing) {}
 
 Experiment const &Batch::experiment() const { return m_experiment; }
 
@@ -32,7 +34,9 @@ PerThetaDefaults const *Batch::defaultsForTheta(double thetaAngle) const {
   return experiment().defaultsForTheta(thetaAngle, runsTable().thetaTolerance());
 }
 
-PerThetaDefaults const *Batch::wildcardDefaults() const { return experiment().wildcardDefaults(); }
+PerThetaDefaults const *Batch::wildcardDefaults() const {
+  return experiment().wildcardDefaults();
+}
 
 void Batch::resetState() { m_runsTable.resetState(); }
 

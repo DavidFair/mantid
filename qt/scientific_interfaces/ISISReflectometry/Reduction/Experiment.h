@@ -53,7 +53,9 @@ public:
 
   PerThetaDefaults const *defaultsForTheta(double thetaAngle, double tolerance) const;
   PerThetaDefaults const *wildcardDefaults() const;
-  void setProcessingInstructions(std::string const &processingInstructions);
+  void setProcessingInstructions(std::string const &processingInstructions,
+                                 boost::optional<double> const &angle,
+                                 double tolerance);
 
 private:
   AnalysisMode m_analysisMode;
@@ -70,6 +72,8 @@ private:
   std::map<std::string, std::string> m_stitchParameters;
   std::vector<PerThetaDefaults> m_perThetaDefaults;
 
+  PerThetaDefaults *mutableDefaultsForTheta(double thetaAngle,
+                                            double tolerance);
   PerThetaDefaults *mutableWildcardDefaults();
 };
 

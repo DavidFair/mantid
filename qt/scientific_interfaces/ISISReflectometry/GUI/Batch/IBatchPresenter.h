@@ -43,6 +43,7 @@ public:
   virtual void notifySetRoundPrecision(int &precision) = 0;
   virtual void notifyResetRoundPrecision() = 0;
   virtual void notifyRoiSaved() = 0;
+  virtual void notifyRoiDataUpdated() = 0;
   virtual void notifyAnyBatchReductionResumed() = 0;
   virtual void notifyAnyBatchReductionPaused() = 0;
   virtual void notifyAnyBatchAutoreductionResumed() = 0;

@@ -79,6 +79,22 @@ PerThetaDefaults const *Experiment::defaultsForTheta(double thetaAngle, double t
   }
 }
 
+PerThetaDefaults *Experiment::mutableDefaultsForTheta(double thetaAngle,
+                                                      double tolerance) {
+  auto nonWildcardMatch = std::find_if(
+      m_perThetaDefaults.begin(), m_perThetaDefaults.end(),
+      [thetaAngle, tolerance](PerThetaDefaults &candiate) -> bool {
+        return !candiate.isWildcard() &&
+               std::abs(thetaAngle - candiate.thetaOrWildcard().get()) <=
+                   tolerance;
+      });
+  if (nonWildcardMatch != m_perThetaDefaults.end()) {
+    return &(*nonWildcardMatch);
+  } else {
+    return mutableWildcardDefaults();
+  }
+}
+
 PerThetaDefaults const *Experiment::wildcardDefaults() const {
   auto wildcardMatch = std::find_if(m_perThetaDefaults.cbegin(), m_perThetaDefaults.cend(),
                                     [](PerThetaDefaults const &candidate) -> bool { return candidate.isWildcard(); });
@@ -103,8 +119,14 @@ PerThetaDefaults *Experiment::mutableWildcardDefaults() {
 }
 
 void Experiment::setProcessingInstructions(
-    std::string const &processingInstructions) {
-  mutableWildcardDefaults()->setProcessingInstructions(processingInstructions);
+    std::string const &processingInstructions,
+    boost::optional<double> const &angle, double tolerance) {
+  if (angle)
+    mutableDefaultsForTheta(*angle, tolerance)
+        ->setProcessingInstructions(processingInstructions);
+  else
+    mutableWildcardDefaults()->setProcessingInstructions(
+        processingInstructions);
 }
 
 bool operator!=(Experiment const &lhs, Experiment const &rhs) {

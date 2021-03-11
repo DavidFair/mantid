@@ -11,6 +11,7 @@
 #include "MantidAPI/AlgorithmManager.h"
 #include "MantidAPI/AnalysisDataService.h"
 #include "MantidAPI/MatrixWorkspace.h"
+#include "MantidKernel/Tolerance.h"
 #include "MantidKernel/UserStringParser.h"
 
 #include <sstream>
@@ -83,7 +84,7 @@ void RoiPresenter::notifyWorkspaceChanged() {
   auto const inputName = m_view->getWorkspaceName();
   loadWorkspace(inputName);
   refresh2DPlot(inputName);
-
+  m_mainPresenter->notifyRoiDataUpdated();
   refresh1DPlot();
 }
 
@@ -151,6 +152,14 @@ void RoiPresenter::notifyApply() { m_mainPresenter->notifyRoiSaved(); }
 
 void RoiPresenter::notifyRoiChanged() { refresh1DPlot(); }
 
+boost::optional<double> RoiPresenter::getAngle() const {
+  auto const angle = m_view->getAngle();
+  if (angle > Mantid::Kernel::Tolerance)
+    return angle;
+
+  return boost::none;
+}
+
 /** Get the currently selected ROI range
  *
  * returns : the ROI as a grouping pattern string (see the GroupDetectors
@@ -171,5 +180,6 @@ void RoiPresenter::setSelectedRoi(std::string const &roi) {
   // TODO expand to support multiple ranges
   auto range = ranges[0];
   m_view->setRangeSelectorRange(ROI_SELECTOR_NAME, range);
+  refresh1DPlot();
 }
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

@@ -28,8 +28,9 @@ public:
   virtual void notifyAutoreductionResumed() = 0;
   virtual void notifyInstrumentChanged(std::string const &instrumentName) = 0;
   virtual void restoreDefaults() = 0;
-  virtual void notifyProcessingInstructionsChanged(
-      std::string const &processingInstructions) = 0;
+  virtual void
+  notifyProcessingInstructionsChanged(std::string const &processingInstructions,
+                                      boost::optional<double> const &angle) = 0;
 };
 } // namespace ISISReflectometry
 } // namespace CustomInterfaces

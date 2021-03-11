@@ -34,6 +34,7 @@ void QtRoiView::subscribe(RoiViewSubscriber *notifyee) {
 void QtRoiView::initLayout() {
   m_ui.setupUi(this);
   m_ui.homeButton->setIcon(Icons::getIcon("mdi.home", "black", 1.3));
+  m_ui.angleSpinBox->setSpecialValueText("Unset");
   m_ui.plotsLayout->addWidget(m_2DPlot);
   m_ui.plotsLayout->addWidget(m_1DPlot);
 }
@@ -71,6 +72,10 @@ std::string QtRoiView::getWorkspaceName() const {
 void QtRoiView::setWorkspaceName(std::string const &workspaceName) {
   setText(*m_ui.textWorkspace, workspaceName);
 }
+
+double QtRoiView::getAngle() const { return m_ui.angleSpinBox->value(); }
+
+void QtRoiView::setAngle(double angle) { m_ui.angleSpinBox->setValue(angle); }
 
 void QtRoiView::addRangeSelector(std::string const &name) {
   auto rangeSelector = m_2DPlot->addRangeSelector(

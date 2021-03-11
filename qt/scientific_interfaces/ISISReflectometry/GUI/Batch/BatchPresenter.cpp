@@ -73,10 +73,15 @@ BatchPresenter::BatchPresenter(
 
   m_unsavedBatchFlag = false;
 
+  // Initialise the ROI tab with the current processing instructions
+  setSelectedRoi();
+
   observePostDelete();
   observeRename();
   observeADSClear();
 }
+
+Batch const &BatchPresenter::model() const { return m_jobRunner->model(); }
 
 /** Accept a main presenter
  * @param mainPresenter :: [input] A main presenter
@@ -270,9 +275,15 @@ std::string BatchPresenter::instrumentName() const { return m_mainPresenter->ins
 void BatchPresenter::settingsChanged() {
   setBatchUnsaved();
   m_runsPresenter->settingsChanged();
+  setSelectedRoi();
+}
 
-  // Update the ROI tab with the processing instructions
-  auto const defaults = m_jobRunner->model().experiment().wildcardDefaults();
+/** Update the selected range on the ROI tab with the current processing
+ * instructions
+ */
+void BatchPresenter::setSelectedRoi() {
+  auto const angle = m_roiPresenter->getAngle();
+  auto const defaults = model().defaultsForTheta(angle);
   if (defaults && defaults->processingInstructions()) {
     try {
       m_roiPresenter->setSelectedRoi(*(defaults->processingInstructions()));
@@ -331,9 +342,12 @@ void BatchPresenter::notifyResetRoundPrecision() { m_runsPresenter->resetRoundPr
 
 void BatchPresenter::notifyRoiSaved() {
   auto const roi = m_roiPresenter->getSelectedRoi();
-  m_experimentPresenter->notifyProcessingInstructionsChanged(roi);
+  auto const angle = m_roiPresenter->getAngle();
+  m_experimentPresenter->notifyProcessingInstructionsChanged(roi, angle);
   settingsChanged();
 }
+
+void BatchPresenter::notifyRoiDataUpdated() { setSelectedRoi(); }
 
 /** Get the percent of jobs that have been completed out of the current
     processing list
@@ -369,13 +383,15 @@ void BatchPresenter::clearADSHandle() {
 MatrixWorkspace_sptr
 BatchPresenter::reduceWorkspace(std::string const &inputName) {
   // Create a copy of the batch model with updated processing instructions
-  auto batch = m_jobRunner->model();
-  auto experiment = Experiment(batch.experiment());
-  experiment.setProcessingInstructions(m_roiPresenter->getSelectedRoi());
-  auto const batchCopy = Batch(experiment, batch.instrument(),
-                               batch.mutableRunsTable(), batch.slicing());
+  auto const angle = m_roiPresenter->getAngle();
+  auto runsTable = RunsTable(model().runsTable());
+  auto experiment = Experiment(model().experiment());
+  experiment.setProcessingInstructions(m_roiPresenter->getSelectedRoi(), angle,
+                                       runsTable.thetaTolerance());
+  auto const batch =
+      Batch(experiment, model().instrument(), runsTable, model().slicing());
   // Get configuration information for the reduction algorithm
-  auto conf = createConfiguredAlgorithm(batchCopy, inputName);
+  auto conf = createConfiguredAlgorithm(batch, inputName, angle);
   conf->algorithm()->setChild(true);
   // Update the properties on the actual algorithm
   for (auto const &propKvp : conf->properties())

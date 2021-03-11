@@ -24,6 +24,7 @@ public:
 
   // IRoiPresenter overrides
   void acceptMainPresenter(IBatchPresenter *mainPresenter) override;
+  boost::optional<double> getAngle() const override;
   std::string getSelectedRoi() const override;
   void setSelectedRoi(std::string const &) override;
 

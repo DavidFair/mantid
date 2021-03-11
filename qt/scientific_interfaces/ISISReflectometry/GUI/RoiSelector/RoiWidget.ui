@@ -59,6 +59,23 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="angleLayout">
+         <item>
+          <widget class="QLabel" name="angleLabel">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="text">
+            <string>Angle</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="angleSpinBox"/>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QRadioButton" name="fgRadioButton">
          <property name="text">
           <string>Region of interest</string>

@@ -19,7 +19,7 @@ class MANTIDQT_ISISREFLECTOMETRY_DLL IBatchJobRunner {
 public:
   virtual ~IBatchJobRunner() = default;
 
-  virtual Batch model() const = 0;
+  virtual Batch const &model() const = 0;
   virtual bool isProcessing() const = 0;
   virtual bool isAutoreducing() const = 0;
   virtual int percentComplete() const = 0;

@@ -24,11 +24,15 @@ using AlgorithmRuntimeProps = std::map<std::string, std::string>;
 
 MANTIDQT_ISISREFLECTOMETRY_DLL MantidQt::API::IConfiguredAlgorithm_sptr
 createConfiguredAlgorithm(Batch const &model, Row &row);
+MANTIDQT_ISISREFLECTOMETRY_DLL MantidQt::API::IConfiguredAlgorithm_sptr
+createConfiguredAlgorithm(Batch const &model, std::string const &workspaceName,
+                          boost::optional<double> const &angle);
 
 MANTIDQT_ISISREFLECTOMETRY_DLL AlgorithmRuntimeProps
 createAlgorithmRuntimeProps(Batch const &model, Row const &row);
 MANTIDQT_ISISREFLECTOMETRY_DLL AlgorithmRuntimeProps
-createAlgorithmRuntimeProps(Batch const &model);
+createAlgorithmRuntimeProps(Batch const &model,
+                            boost::optional<double> const &angle = boost::none);
 
 MANTIDQT_ISISREFLECTOMETRY_DLL Mantid::API::MatrixWorkspace_sptr
 getOutputWorkspace(const Mantid::API::IAlgorithm_sptr &algorithm);

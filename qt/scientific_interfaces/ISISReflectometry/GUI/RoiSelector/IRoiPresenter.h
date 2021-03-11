@@ -21,6 +21,7 @@ class IRoiPresenter {
 public:
   virtual ~IRoiPresenter() = default;
   virtual void acceptMainPresenter(IBatchPresenter *mainPresenter) = 0;
+  virtual boost::optional<double> getAngle() const = 0;
   virtual std::string getSelectedRoi() const = 0;
   virtual void setSelectedRoi(std::string const &roi) = 0;
 };

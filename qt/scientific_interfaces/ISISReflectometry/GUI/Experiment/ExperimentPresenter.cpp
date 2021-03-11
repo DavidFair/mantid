@@ -76,8 +76,10 @@ void ExperimentPresenter::notifyPerAngleDefaultsChanged(int, int column) {
 }
 
 void ExperimentPresenter::notifyProcessingInstructionsChanged(
-    std::string const &processingInstructions) {
-  m_model.setProcessingInstructions(processingInstructions);
+    std::string const &processingInstructions,
+    boost::optional<double> const &angle) {
+  m_model.setProcessingInstructions(processingInstructions, angle,
+                                    m_thetaTolerance);
   updateViewFromModel();
 }
 

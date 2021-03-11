@@ -31,6 +31,8 @@ public:
 
   std::string getWorkspaceName() const override;
   void setWorkspaceName(std::string const &workspaceName) override;
+  double getAngle() const override;
+  void setAngle(double angle) override;
   void addRangeSelector(std::string const &name) override;
   void setRangeSelectorBounds(std::string const &name, double min,
                               double max) override;

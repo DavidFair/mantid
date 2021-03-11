@@ -239,15 +239,15 @@ IConfiguredAlgorithm_sptr createConfiguredAlgorithm(Batch const &model, Row &row
  * @param workspaceName : the workspace to run the algorithm on
  */
 IConfiguredAlgorithm_sptr
-createConfiguredAlgorithm(Batch const &model,
-                          std::string const &workspaceName) {
+createConfiguredAlgorithm(Batch const &model, std::string const &workspaceName,
+                          boost::optional<double> const &angle) {
   // Create the algorithm
   auto alg = Mantid::API::AlgorithmManager::Instance().create(
       "ReflectometryISISLoadAndProcess");
   alg->setRethrows(true);
 
   // Set the algorithm properties from the model
-  auto properties = createAlgorithmRuntimeProps(model);
+  auto properties = createAlgorithmRuntimeProps(model, angle);
   updateInputWorkspacesProperties(properties, {workspaceName});
 
   // Return the configured algorithm
@@ -267,15 +267,17 @@ AlgorithmRuntimeProps createAlgorithmRuntimeProps(Batch const &model,
   return properties;
 }
 
-AlgorithmRuntimeProps createAlgorithmRuntimeProps(Batch const &model) {
+AlgorithmRuntimeProps
+createAlgorithmRuntimeProps(Batch const &model,
+                            boost::optional<double> const &angle) {
   auto properties = AlgorithmRuntimeProps();
   // Update properties from settings in the event, experiment and instrument
   // tabs
   updateEventProperties(properties, model.slicing());
   updateExperimentProperties(properties, model.experiment());
   updateInstrumentProperties(properties, model.instrument());
-  // Update properties from the wildcard row in the per-theta defaults table
-  updatePerThetaDefaultProperties(properties, model.wildcardDefaults());
+  // Update properties from the relevant row in the per-theta defaults table
+  updatePerThetaDefaultProperties(properties, model.defaultsForTheta(angle));
   return properties;
 }
 
