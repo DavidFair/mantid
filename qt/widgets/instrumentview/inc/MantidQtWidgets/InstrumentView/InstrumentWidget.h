@@ -8,7 +8,7 @@
 
 #include "DllOption.h"
 #include "InstrumentWidgetTypes.h"
-#include "MantidGLWidget.h"
+#include "IMantidGLWidget.h"
 #include "UnwrappedSurface.h"
 
 #include "MantidAPI/AlgorithmObserver.h"
@@ -286,7 +286,7 @@ protected:
   InstrumentWidgetPickTab *m_pickTab;
   XIntegrationControl *m_xIntegration;
   /// The OpenGL widget to display the instrument
-  MantidGLWidget *m_InstrumentDisplay;
+  IMantidGLWidget *m_InstrumentDisplay;
   /// The simple widget to display the instrument
   SimpleWidget *m_simpleDisplay;
 
