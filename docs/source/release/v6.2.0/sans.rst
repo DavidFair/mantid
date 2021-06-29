@@ -18,6 +18,7 @@ New
 Bugfixes
 --------
 
+- The ISIS SANS interface will no longer throw an uncaught exception when a user tries to enter row information without loading a Mask/TOML file.
 
 Improvements
 ############
