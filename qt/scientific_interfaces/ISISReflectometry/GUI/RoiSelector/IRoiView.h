@@ -34,21 +34,17 @@ public:
   virtual void setWorkspaceName(std::string const &workspaceName) = 0;
   virtual double getAngle() const = 0;
   virtual void setAngle(double angle) = 0;
+  virtual void plot3D(Mantid::API::MatrixWorkspace_sptr ws) = 0;
   virtual void plot2D(Mantid::API::MatrixWorkspace_sptr ws) = 0;
-  virtual void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx,
-                      std::string const &title) = 0;
+  virtual void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx, std::string const &title) = 0;
   virtual void clear1DPlot() = 0;
   virtual void zoomOut2D() = 0;
   virtual void zoomOut1D() = 0;
   virtual void set1DPlotScaleLogLog() = 0;
   virtual void addRangeSelector(std::string const &name) = 0;
-  virtual void setRangeSelectorBounds(std::string const &name, double min,
-                                      double max) = 0;
-  virtual std::pair<double, double>
-  getRangeSelectorRange(std::string const &name) const = 0;
-  virtual void
-  setRangeSelectorRange(std::string const &name,
-                        std::pair<double, double> const &range) = 0;
+  virtual void setRangeSelectorBounds(std::string const &name, double min, double max) = 0;
+  virtual std::pair<double, double> getRangeSelectorRange(std::string const &name) const = 0;
+  virtual void setRangeSelectorRange(std::string const &name, std::pair<double, double> const &range) = 0;
   virtual void setBounds(double minValue, double maxValue) = 0;
 };
 } // namespace MantidQt::CustomInterfaces::ISISReflectometry

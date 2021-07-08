@@ -9,6 +9,7 @@
 #include "Common/QWidgetGroup.h"
 #include "IRoiView.h"
 #include "MantidAPI/MatrixWorkspace_fwd.h"
+#include "MantidQtWidgets/InstrumentView/InstrumentActor.h"
 #include "MantidQtWidgets/InstrumentView/InstrumentDisplay.h"
 #include "ui_RoiWidget.h"
 
@@ -46,6 +47,7 @@ public:
   void setRangeSelectorRange(std::string const &name, std::pair<double, double> const &range) override;
   void setBounds(double minValue, double maxValue) override;
 
+  void plot3D(Mantid::API::MatrixWorkspace_sptr ws) override;
   void plot2D(Mantid::API::MatrixWorkspace_sptr ws) override;
   void plot1D(Mantid::API::MatrixWorkspace_sptr ws, size_t wsIdx, std::string const &title) override;
   void clear1DPlot() override;
@@ -61,6 +63,7 @@ private slots:
 
 private:
   void initLayout();
+  void setupInstDisplay();
   std::string getText(QLineEdit const &lineEdit) const;
   void setText(QLineEdit &lineEdit, std::string const &text);
 
@@ -68,6 +71,8 @@ private:
   RoiViewSubscriber *m_notifyee;
   MantidQt::MantidWidgets::ContourPreviewPlot *m_2DPlot; // TODO use unique_ptrs
   MantidQt::MantidWidgets::PreviewPlot *m_1DPlot;
+
+  std::unique_ptr<MantidQt::MantidWidgets::InstrumentActor> m_instActor;
   std::unique_ptr<MantidQt::MantidWidgets::InstrumentDisplay> m_instDisplay;
 
   friend class Encoder;

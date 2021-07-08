@@ -17,8 +17,7 @@ namespace MantidQt::CustomInterfaces::ISISReflectometry {
 RoiPresenter is a presenter class for the widget 'Regions of Interest' in the
 ISIS Reflectometry Interface.
 */
-class MANTIDQT_ISISREFLECTOMETRY_DLL RoiPresenter : public IRoiPresenter,
-                                                    public RoiViewSubscriber {
+class MANTIDQT_ISISREFLECTOMETRY_DLL RoiPresenter : public IRoiPresenter, public RoiViewSubscriber {
 public:
   RoiPresenter(IRoiView *view, std::string const &loadAlgorithm);
 
@@ -41,6 +40,7 @@ private:
   bool m_loaded;
 
   void loadWorkspace(std::string const &workspaceName);
+  void refresh3DPlot(std::string const &inputName);
   void refresh2DPlot(std::string const &inputName);
   void refresh1DPlot();
 };

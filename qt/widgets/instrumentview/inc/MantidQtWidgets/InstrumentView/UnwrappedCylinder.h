@@ -14,17 +14,14 @@ namespace MantidWidgets {
 /**
  * Implementation of UnwrappedSurface as a cylinder
  */
-class UnwrappedCylinder : public RotationSurface {
+class EXPORT_OPT_MANTIDQT_INSTRUMENTVIEW UnwrappedCylinder : public RotationSurface {
 public:
-  UnwrappedCylinder(const InstrumentActor *rootActor,
-                    const Mantid::Kernel::V3D &origin,
+  UnwrappedCylinder(const InstrumentActor *rootActor, const Mantid::Kernel::V3D &origin,
                     const Mantid::Kernel::V3D &axis);
 
 protected:
-  void project(const Mantid::Kernel::V3D &pos, double &u, double &v,
-               double &uscale, double &vscale) const override;
-  void rotate(const UnwrappedDetector &udet,
-              Mantid::Kernel::Quat &R) const override;
+  void project(const Mantid::Kernel::V3D &pos, double &u, double &v, double &uscale, double &vscale) const override;
+  void rotate(const UnwrappedDetector &udet, Mantid::Kernel::Quat &R) const override;
 };
 } // namespace MantidWidgets
 } // namespace MantidQt

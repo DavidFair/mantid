@@ -6,13 +6,17 @@
 // SPDX - License - Identifier: GPL - 3.0 +
 #include "QtRoiView.h"
 #include "MantidAPI/MatrixWorkspace.h"
+#include "MantidGeometry/Instrument/ComponentInfo.h"
 #include "MantidKernel/UsageService.h"
 #include "MantidQtIcons/Icon.h"
 #include "MantidQtWidgets/InstrumentView/InstrumentDisplay.h"
+#include "MantidQtWidgets/InstrumentView/UnwrappedCylinder.h"
 #include "MantidQtWidgets/Plotting/ContourPreviewPlot.h"
 #include "MantidQtWidgets/Plotting/PreviewPlot.h"
-#include <memory>
+
 #include <qwidget.h>
+
+#include <memory>
 
 using Mantid::API::MatrixWorkspace_sptr;
 using MantidQt::MantidWidgets::ContourPreviewPlot;
@@ -21,14 +25,19 @@ using MantidQt::MantidWidgets::RangeSelector;
 
 namespace MantidQt::CustomInterfaces::ISISReflectometry {
 
+using Mantid::Geometry::ComponentInfo;
+using MantidQt::MantidWidgets::InstrumentActor;
 using MantidQt::MantidWidgets::InstrumentDisplay;
+using MantidQt::MantidWidgets::UnwrappedCylinder;
 
 /** Constructor
  * @param parent :: [input] The parent of this widget
  */
 QtRoiView::QtRoiView(QWidget *parent)
-    : QWidget(parent), m_2DPlot(new ContourPreviewPlot(this)), m_1DPlot(new PreviewPlot(this)), m_instDisplay(nullptr) {
+    : QWidget(parent), m_2DPlot(new ContourPreviewPlot(this)), m_1DPlot(new PreviewPlot(this)), m_instActor(nullptr),
+      m_instDisplay(nullptr) {
   initLayout();
+  setupInstDisplay();
 }
 
 void QtRoiView::subscribe(RoiViewSubscriber *notifyee) { m_notifyee = notifyee; }
@@ -37,11 +46,29 @@ void QtRoiView::initLayout() {
   m_ui.setupUi(this);
   m_ui.homeButton->setIcon(Icons::getIcon("mdi.home", "black", 1.3));
   m_ui.angleSpinBox->setSpecialValueText("Unset");
+
   m_ui.plotsLayout->addWidget(m_2DPlot);
   m_ui.plotsLayout->addWidget(m_1DPlot);
+}
+
+void QtRoiView::setupInstDisplay() {
   auto instDisplayParent = std::make_unique<QWidget>(this);
   m_instDisplay = std::make_unique<InstrumentDisplay>(instDisplayParent.get());
   m_ui.roiLayout->addWidget(instDisplayParent.release());
+  // TODO: Instrument Actor -> Surface factory -> instDisplay::setSurface()
+}
+
+void QtRoiView::plot3D(MatrixWorkspace_sptr ws) {
+  bool autoscaling = true;
+  auto scaleMin = 0.0;
+  auto scaleMax = 1.0;
+  m_instActor =
+      std::make_unique<InstrumentActor>(QString::fromStdString(ws->getName()), autoscaling, scaleMin, scaleMax);
+  const auto &componentInfo = m_instActor->componentInfo();
+  auto sample_pos = componentInfo.samplePosition();
+  auto axis = Mantid::Kernel::V3D(0, 1, 0); // CYLINDRICAL_Y
+
+  m_instDisplay->setSurface(std::make_shared<UnwrappedCylinder>(m_instActor.get(), sample_pos, axis));
 }
 
 void QtRoiView::plot2D(MatrixWorkspace_sptr ws) { m_2DPlot->setWorkspace(ws); }

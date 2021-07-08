@@ -29,15 +29,13 @@ static constexpr const char *ROI_SELECTOR_NAME = "roi_selector";
  * @param ranges : a vector of ranges, where each range is a pair of doubles
  * @returns : a grouping pattern string (see GroupDetectors for details)
  */
-std::string
-roiStringFromRanges(std::vector<std::pair<double, double>> const &ranges) {
+std::string roiStringFromRanges(std::vector<std::pair<double, double>> const &ranges) {
   std::ostringstream ss;
   bool isFirst = true;
   for (auto range : ranges) {
     if (!isFirst)
       ss << '+';
-    ss << static_cast<int>(range.first) << '-'
-       << static_cast<int>(range.second);
+    ss << static_cast<int>(range.first) << '-' << static_cast<int>(range.second);
   }
   return ss.str();
 }
@@ -47,21 +45,17 @@ roiStringFromRanges(std::vector<std::pair<double, double>> const &ranges) {
  * @param roiString : a grouping pattern string (see GroupDetectors for details)
  * @returns : a vector of ranges, where each range is a pair of doubles
  */
-std::vector<std::pair<double, double>>
-roiRangesFromString(std::string const &roiString) {
+std::vector<std::pair<double, double>> roiRangesFromString(std::string const &roiString) {
   auto result = std::vector<std::pair<double, double>>();
   auto parser = Mantid::Kernel::UserStringParser();
   auto const ranges = parser.parse(roiString);
-  std::transform(ranges.cbegin(), ranges.cend(), std::back_inserter(result),
-                 [](auto const &range) {
-                   auto minmax =
-                       std::minmax_element(range.cbegin(), range.cend());
-                   return std::make_pair(static_cast<double>(*minmax.first),
-                                         static_cast<double>(*minmax.second));
-                 });
+  std::transform(ranges.cbegin(), ranges.cend(), std::back_inserter(result), [](auto const &range) {
+    auto minmax = std::minmax_element(range.cbegin(), range.cend());
+    return std::make_pair(static_cast<double>(*minmax.first), static_cast<double>(*minmax.second));
+  });
   return result;
 }
-}
+} // namespace
 
 namespace MantidQt::CustomInterfaces::ISISReflectometry {
 
@@ -74,15 +68,14 @@ RoiPresenter::RoiPresenter(IRoiView *view, std::string const &loadAlgorithm)
   m_view->addRangeSelector(ROI_SELECTOR_NAME);
 }
 
-void RoiPresenter::acceptMainPresenter(IBatchPresenter *mainPresenter) {
-  m_mainPresenter = mainPresenter;
-}
+void RoiPresenter::acceptMainPresenter(IBatchPresenter *mainPresenter) { m_mainPresenter = mainPresenter; }
 
 /** Notification received when the user-specified input workspace has changed
  */
 void RoiPresenter::notifyWorkspaceChanged() {
   auto const inputName = m_view->getWorkspaceName();
   loadWorkspace(inputName);
+  refresh3DPlot(inputName);
   refresh2DPlot(inputName);
   m_mainPresenter->notifyRoiDataUpdated();
   refresh1DPlot();
@@ -117,14 +110,25 @@ void RoiPresenter::refresh2DPlot(std::string const &inputName) {
   m_view->plot2D(workspace);
 
   auto const nSpec = workspace->getNumberHistograms();
-  auto const minSpec =
-      static_cast<double>(workspace->getSpectrum(0).getSpectrumNo());
-  auto const maxSpec =
-      static_cast<double>(workspace->getSpectrum(nSpec - 1).getSpectrumNo());
+  auto const minSpec = static_cast<double>(workspace->getSpectrum(0).getSpectrumNo());
+  auto const maxSpec = static_cast<double>(workspace->getSpectrum(nSpec - 1).getSpectrumNo());
   m_view->setBounds(minSpec, maxSpec);
   m_view->setRangeSelectorBounds(ROI_SELECTOR_NAME, minSpec, maxSpec);
-  m_view->setRangeSelectorRange(ROI_SELECTOR_NAME,
-                                std::make_pair(minSpec + 1, maxSpec - 1));
+  m_view->setRangeSelectorRange(ROI_SELECTOR_NAME, std::make_pair(minSpec + 1, maxSpec - 1));
+}
+
+/** Refresh the 3D plot from the input workspace, if it exists in the ADS; does
+ * nothing if not
+ *
+ * @param inputName : the user-specified input workspace name
+ */
+void RoiPresenter::refresh3DPlot(std::string const &inputName) {
+  auto const &ads = Mantid::API::AnalysisDataService::Instance();
+  if (!ads.doesExist(inputName))
+    return;
+
+  auto workspace = ads.retrieveWS<MatrixWorkspace>(inputName);
+  m_view->plot3D(workspace);
 }
 
 /** Refresh the 1D plot of the reduced workspace, if it exists; does nothing if
@@ -174,9 +178,7 @@ std::string RoiPresenter::getSelectedRoi() const {
 void RoiPresenter::setSelectedRoi(std::string const &roi) {
   auto ranges = roiRangesFromString(roi);
   if (ranges.size() < 1)
-    throw std::runtime_error(
-        std::string("No valid ranges found parsing regions of interest: ") +
-        roi);
+    throw std::runtime_error(std::string("No valid ranges found parsing regions of interest: ") + roi);
   // TODO expand to support multiple ranges
   auto range = ranges[0];
   m_view->setRangeSelectorRange(ROI_SELECTOR_NAME, range);
