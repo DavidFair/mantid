@@ -6,6 +6,7 @@ set(MPL_SRC_FILES
     src/Mpl/ExternalPlotter.cpp
     src/Mpl/PeakPicker.cpp
     src/Mpl/PreviewPlot.cpp
+    src/Mpl/PreviewPlotBase.cpp
     src/Mpl/RangeSelector.cpp
     src/Mpl/SingleSelector.cpp
 )
@@ -15,6 +16,7 @@ set(MPL_MOC_FILES
     inc/MantidQtWidgets/Plotting/Mpl/ExternalPlotter.h
     inc/MantidQtWidgets/Plotting/Mpl/PeakPicker.h
     inc/MantidQtWidgets/Plotting/Mpl/PreviewPlot.h
+    inc/MantidQtWidgets/Plotting/Mpl/PreviewPlotBase.h
     inc/MantidQtWidgets/Plotting/Mpl/RangeSelector.h
     inc/MantidQtWidgets/Plotting/Mpl/SingleSelector.h
 )
@@ -26,6 +28,7 @@ set(MPL_INC_FILES
     inc/MantidQtWidgets/Plotting/ContourPreviewPlot.h
     inc/MantidQtWidgets/Plotting/PeakPicker.h
     inc/MantidQtWidgets/Plotting/PreviewPlot.h
+    inc/MantidQtWidgets/Plotting/Mpl/PreviewPlotBase.h
 )
 
 set(MPL_UI_FILES inc/MantidQtWidgets/Plotting/ContourPreviewPlot.ui
