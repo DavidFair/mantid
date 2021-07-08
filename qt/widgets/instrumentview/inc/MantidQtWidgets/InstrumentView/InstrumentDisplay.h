@@ -13,15 +13,17 @@
 #include "IStackedLayout.h"
 
 #include <memory>
-// Qt forward declarations
-class QWidget;
+#include <qobjectdefs.h>
+#include <qwidget.h>
 
 namespace MantidQt::MantidWidgets {
 
-class EXPORT_OPT_MANTIDQT_INSTRUMENTVIEW InstrumentDisplay : public IInstrumentDisplay {
+class EXPORT_OPT_MANTIDQT_INSTRUMENTVIEW InstrumentDisplay : public QWidget, public IInstrumentDisplay {
+  Q_OBJECT
 public:
   InstrumentDisplay(QWidget *parent, std::unique_ptr<IGLDisplay> glDisplay = nullptr,
                     std::unique_ptr<IQtDisplay> qtDisplay = nullptr, std::unique_ptr<IStackedLayout> layout = nullptr);
+  virtual ~InstrumentDisplay() = default;
   int currentIndex() const override;
   QWidget *currentWidget() const override;
   void setCurrentIndex(int val) const override;
