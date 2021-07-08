@@ -68,6 +68,9 @@ mtd_add_qt_tests(
     MantidScientificInterfacesISISReflectometry
     MantidQtWidgetsCommon
     MantidQtWidgetsPlotting
+    MantidQtWidgetsInstrumentView
     MantidQtWidgetsMplCpp
+  QT5_LINK_LIBS
+    Qt5::OpenGL
   PARENT_DEPENDENCIES
     GUITests)

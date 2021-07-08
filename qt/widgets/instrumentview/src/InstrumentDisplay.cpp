@@ -30,6 +30,7 @@ InstrumentDisplay::InstrumentDisplay(QWidget *parent, std::unique_ptr<IGLDisplay
 
   if (!m_instrumentDisplayLayout)
     m_instrumentDisplayLayout = std::make_unique<StackedLayout>(parent);
+
   m_instrumentDisplayLayout->addWidget(getGLDisplay());
   m_instrumentDisplayLayout->addWidget(getQtDisplay());
 }

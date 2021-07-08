@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>934</width>
+    <width>846</width>
     <height>338</height>
    </rect>
   </property>
@@ -74,27 +74,6 @@
           <widget class="QDoubleSpinBox" name="angleSpinBox"/>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="fgRadioButton">
-         <property name="text">
-          <string>Region of interest</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="bgRadioButton">
-         <property name="text">
-          <string>Background</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="transRadioButton">
-         <property name="text">
-          <string>Transmission</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>

@@ -66,6 +66,7 @@ mtd_add_qt_library(
   QT4_LINK_LIBS Qwt5
   MTD_QT_LINK_LIBS
     MantidQtWidgetsCommon
+    MantidQtWidgetsInstrumentView
     MantidQtIcons
   INSTALL_DIR_BASE ${PLUGINS_DIR}
   OSX_INSTALL_RPATH
@@ -85,7 +86,8 @@ mtd_add_qt_library(
     IN_MANTIDQT_ISISREFLECTOMETRY
     PRECOMPILED
     PrecompiledHeader.h
-  INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+  INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}
   LINK_LIBS
     ${CORE_MANTIDLIBS}
     ${POCO_LIBRARIES}
@@ -95,8 +97,11 @@ mtd_add_qt_library(
   MTD_QT_LINK_LIBS
     MantidQtWidgetsCommon
     MantidQtWidgetsPlotting
+    MantidQtWidgetsInstrumentView
     MantidQtIcons
     MantidQtWidgetsMplCpp
+  QT5_LINK_LIBS
+    Qt5::OpenGL
   INSTALL_DIR_BASE ${WORKBENCH_PLUGINS_DIR}
   OSX_INSTALL_RPATH
     @loader_path/../../Contents/MacOS
